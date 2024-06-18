@@ -26,7 +26,7 @@ import csv
 #ID for each image, refered to in csv-file
 image_id = 0
 #path to csv-file
-csv_path = "C:/Users/marko/OneDrive/Documents/viertes_Semester/Big_Data/image_recomender/csv/images.csv"
+csv_path = "C:/Users/marko/OneDrive/Documents/viertes_Semester/Big_Data/Image_recommender_Big_Data/src/csv/images.csv"
 
 
 def create_csv(args, csv_path):
@@ -58,22 +58,40 @@ def create_csv(args, csv_path):
     						"Avg Blue", "Avg Red", 
     						"Avg Green"]) 
             
-def image_generator(args, path = Path("C:/Users/marko/OneDrive/Documents/viertes_Semester/Big_Data/image_recomender/images")):
-    #global.image_id = 0
+def image_generator(args, path = Path("C:/Users/marko/OneDrive/Documents/viertes_Semester/Big_Data/Image_recommender_Big_Data/src/images")):
+    
     if args.folder == True:
         path = Path(args.folder)
+        
+    #creating a list with all paths already loaded into csv
+    list_img = []
+    with open('C:/Users/marko/OneDrive/Documents/viertes_Semester/Big_Data/Image_recommender_Big_Data/src/csv/images.csv', mode ='r')as file:
+      csvFile = csv.reader(file)
+      for lines in csvFile:
+          list_img.append(lines[1])
+        
     # generator that runs image files from our given directory as the parameter
     for root, _, files in os.walk(path):
         
         for file in files:
             if file.lower().endswith(('png', 'jpg', 'jpeg')):
                 image_path = os.path.join(root, file)
-                global image_id 
-                image_id += 1
-                #print(image_path, image_id)
-                yield image_path, image_id
                 
-def get_data(args, image_path, image_id, csv_path):
+                """for i in list_img:
+                    if i == image_path:
+                        print("image in csv")"""
+                if image_path not in list_img:
+                    print("image in csv")
+                    #loading the image
+                    img = cv2.imread(image_path) 
+                    
+                    #setting counter up
+                    global image_id 
+                    image_id += 1
+                    
+                    yield img, image_path, image_id
+                
+def get_data(args, img, image_path, image_id, csv_path):
     """
     # Argparse function to get 
     # the path of the image directory 
@@ -99,7 +117,7 @@ def get_data(args, image_path, image_id, csv_path):
     batch_size = int(batch_size)
     
     #loading the image
-    img = cv2.imread(image_path) 
+    #img = cv2.imread(image_path) 
     #print(img)
     h,w,c = img.shape
     
@@ -130,20 +148,21 @@ def generate(args):
     get_data(args, image_path, image_id, csv_path)
     print("get data")"""
     create_csv(args, csv_path)
-    #print("create")
-    #print(image_generator(args))
-    print(next(image_generator(args)))
-    
-    #image_path, image_id = next(image_generator(args))
-    #print(image_path)
-    for image_path, image_id in image_generator(args):
-        print(image_id)
-        #print(f" 1    :{image_path}")
-        #print(image_generator(args))
-        #image_path, image_id = next(image_generator(args))
-        #print("generator")
-        get_data(args, image_path, image_id, csv_path)
-        print("get data")   
+    try:
+        gen = next(image_generator(args))
+        if gen == None:
+                print("No new images")
+                return
+        #print(next(image_generator(args)))
+        
+        for img ,image_path, image_id in image_generator(args):
+            print(image_id)
+            get_data(args, img, image_path, image_id, csv_path)
+            print("image data loaded into csv") 
+    except:
+        StopIteration
+        print("no new images to load into database")
+     
     
     
     
