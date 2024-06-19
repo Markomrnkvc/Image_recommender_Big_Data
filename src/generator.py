@@ -17,6 +17,7 @@ import cv2
 import argparse 
 import numpy 
 import csv 
+from tqdm import tqdm
 #from Pil import Image
 #from main import args
 
@@ -32,7 +33,7 @@ csv_path = "C:/Users/marko/OneDrive/Documents/viertes_Semester/Big_Data/Image_re
 def create_csv(args, csv_path):
     # Check whether the CSV 
     # exists or not if not then create one. 
-    my_images = args.folder #Path("C:/Users/marko/OneDrive/Documents/viertes_Semester/Big_Data/image_recomender/csv/images.csv") 
+    #my_images = args.folder #Path("C:/Users/marko/OneDrive/Documents/viertes_Semester/Big_Data/image_recomender/csv/images.csv") 
 
     #opening csv if existing, writing headers
     """if os.path.exists(csv_path):
@@ -58,10 +59,10 @@ def create_csv(args, csv_path):
     						"Avg Blue", "Avg Red", 
     						"Avg Green"]) 
             
-def image_generator(args, path = Path("C:/Users/marko/OneDrive/Documents/viertes_Semester/Big_Data/Image_recommender_Big_Data/src/images")):
+def image_generator(args):#, path = Path("C:/Users/marko/OneDrive/Documents/viertes_Semester/Big_Data/Image_recommender_Big_Data/src/images")):
     
-    if args.folder == True:
-        path = Path(args.folder)
+    #if args.folder == True:
+    path = Path(args.folder)
         
     #creating a list with all paths already loaded into csv
     list_img = []
@@ -73,13 +74,11 @@ def image_generator(args, path = Path("C:/Users/marko/OneDrive/Documents/viertes
     # generator that runs image files from our given directory as the parameter
     for root, _, files in os.walk(path):
         
-        for file in files:
+        for file in tqdm(files, total=len(files)):
             if file.lower().endswith(('png', 'jpg', 'jpeg')):
                 image_path = os.path.join(root, file)
                 
-                """for i in list_img:
-                    if i == image_path:
-                        print("image in csv")"""
+                #checking if image is already in database
                 if image_path not in list_img:
                     print("image in csv")
                     #loading the image
@@ -139,29 +138,23 @@ def get_data(args, img, image_path, image_id, csv_path):
 """files = img_loading_generator()
 print(files)"""
 
+#method which combines the workflow of generating images and saving the wanted data into a csv
 def generate(args):
-    """create_csv(args, csv_path)
-    print("create")
-    print(image_generator(args))
-    image_path, image_id = next(image_generator(args))
-    print("generator")
-    get_data(args, image_path, image_id, csv_path)
-    print("get data")"""
     create_csv(args, csv_path)
     try:
         gen = next(image_generator(args))
         if gen == None:
-                print("No new images")
+                print("\nNo new images")
                 return
         #print(next(image_generator(args)))
         
         for img ,image_path, image_id in image_generator(args):
             print(image_id)
             get_data(args, img, image_path, image_id, csv_path)
-            print("image data loaded into csv") 
+            print("\nimage data loaded into csv") 
     except:
         StopIteration
-        print("no new images to load into database")
+        print("\nno new images to load into database")
      
     
     
