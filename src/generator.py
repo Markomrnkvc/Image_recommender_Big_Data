@@ -66,7 +66,9 @@ def image_generator(args):#, path = Path("C:/Users/marko/OneDrive/Documents/vier
         
     #creating a list with all paths already loaded into csv
     list_img = []
-    with open('C:/Users/marko/OneDrive/Documents/viertes_Semester/Big_Data/Image_recommender_Big_Data/src/csv/images.csv', mode ='r')as file:
+    #C:\Users\marko\Documents\viertes_semester\BigData\Image_recommender_Big_Data\src\csv
+    #C:/Users/marko/Documents/viertes_Semester/Big_Data/Image_recommender_Big_Data/src/
+    with open('csv/images.csv', mode ='r')as file:
       csvFile = csv.reader(file)
       for lines in csvFile:
           list_img.append(lines[1])
@@ -127,16 +129,24 @@ def get_data(args, img, image_path, image_id, csv_path):
     avg_color = numpy.average(avg_color_per_row, axis = 0) 
     #img_name = os.path.basename(image_path) #only img name, without whole path
    	
+    """with open(csv_path, 'a', newline = '') as file: 
+   		writer = csv.writer(file) 
+   		writer.writerow([image_id, image_path, h, w, c, 
+   						avg_color[0], avg_color[1], 
+   						avg_color[2]]) 
+    file.close() """
+    return image_id, image_path, h, w, c, avg_color
+   
+def data_writer(image_id, image_path, h, w, c, avg_color, csv_path):
+    
     with open(csv_path, 'a', newline = '') as file: 
    		writer = csv.writer(file) 
    		writer.writerow([image_id, image_path, h, w, c, 
    						avg_color[0], avg_color[1], 
    						avg_color[2]]) 
     file.close() 
-   
-    
-"""files = img_loading_generator()
-print(files)"""
+
+
 
 #method which combines the workflow of generating images and saving the wanted data into a csv
 def generate(args):
@@ -150,7 +160,10 @@ def generate(args):
         
         for img ,image_path, image_id in image_generator(args):
             print(image_id)
-            get_data(args, img, image_path, image_id, csv_path)
+            #getting data out of images
+            image_id, image_path, h, w, c, avg_color = get_data(args, img, image_path, image_id, csv_path)
+            #writing data into csv
+            data_writer(image_id, image_path, h, w, c, avg_color, csv_path)
             print("\nimage data loaded into csv") 
     except:
         StopIteration
