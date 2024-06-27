@@ -27,8 +27,9 @@ from tqdm import tqdm
 #ID for each image, refered to in csv-file
 image_id = 0
 #path to csv-file
-csv_path = "C:/Users/marko/OneDrive/Documents/viertes_Semester/Big_Data/Image_recommender_Big_Data/src/csv/images.csv"
-
+csv_file = "csv\images.csv" #"C:/Users/marko/OneDrive/Documents/viertes_Semester/Big_Data/Image_recommender_Big_Data/src/csv/images.csv"
+current_path = os.getcwd()
+csv_path = join(current_path, csv_file)
 
 def create_csv(args, csv_path):
     # Check whether the CSV 
