@@ -36,3 +36,4 @@ def save_in_df(img, embedding, img_id, h, w, c, avg_color, path=pk_path):
 		avg_color[0], avg_color[1], 
 		avg_color[2]]
     
+    df.to_pickle(pk_path)
