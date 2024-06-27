@@ -148,7 +148,7 @@ def data_writer(image_id, image_path, h, w, c, avg_color, csv_path):
     file.close() 
 
 
-
+"""
 #method which combines the workflow of generating images and saving the wanted data into a csv
 def generate(args):
     create_csv(args, csv_path)
@@ -170,6 +170,6 @@ def generate(args):
         StopIteration
         print("\nno new images to load into database")
      
-    
+    """
     
     

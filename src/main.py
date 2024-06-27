@@ -6,7 +6,10 @@ Created on Tue Jun  4 02:57:50 2024
 """
 
 import argparse
-from generator import generate
+import os
+from os.path import join
+
+from dataflow import dataflow
 
 # NOTE: This is the main file, you propably don't need to change anything here
 
@@ -26,7 +29,10 @@ args = parser.parse_args()
 
 # Switch control flow based on arguments
 #if args.mode == "generator":
-generate(args)
+"""generate(args)
+dataframe(args)"""
 
 """if args.mode == "recomender":
     recomender(args)"""
+
+dataflow(args)
