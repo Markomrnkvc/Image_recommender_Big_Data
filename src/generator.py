@@ -9,6 +9,7 @@ Created on Mon Jun  3 20:25:48 2024
 und durch folder iterieren kann"""
 
 # Required Libraries 
+
 import os
 from os.path import join, isfile
 from pathlib import Path 
@@ -168,8 +169,6 @@ def generate(args):
             print("\nimage data loaded into csv") 
     except:
         StopIteration
-        print("\nno new images to load into database")
+        print("\nno new images to load into database")"""
      
-    """
-    
     

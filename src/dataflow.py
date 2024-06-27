@@ -17,9 +17,10 @@ import argparse
 import numpy 
 import csv 
 from tqdm import tqdm
+import random
 
 #ID for each image, refered to in csv-file
-image_id = 0
+#image_id = 0
 
 #getting current path
 current_path = os.getcwd()
@@ -49,6 +50,11 @@ def dataflow(args):
             image_id, image_path, h, w, c, avg_color = get_data(args, img, image_path, image_id, csv_path)
             #writing data into csv
             data_writer(image_id, image_path, h, w, c, avg_color, csv_path)
+            
+            
+            #saving data in pickle file
+            embedding = random.randint(0,1000) #need placeholder, no embeddings yet
+            save_in_df(embedding, image_id, h, w, c, avg_color, pk_path)
             print("\nimage data loaded into csv") 
     except:
         StopIteration
