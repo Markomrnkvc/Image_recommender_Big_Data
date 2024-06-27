@@ -16,10 +16,10 @@ def create_pk(pk_path):
     
     if os.path.exists(pk_path) == False:
         #naming columns
-        cols = {'Image_ID', 'Embeddings', 'Height', 'Width', 'Channels', 'Avg Blue', 'Avg Red', 'Avg Green'}
+        cols = ['Image_ID', 'Embeddings', 'Height', 'Width', 'Channels', 'Avg Blue', 'Avg Red', 'Avg Green']
         
         #creating DataFrame
-        df = pd.DataFrame(data = cols)
+        df = pd.DataFrame(columns=cols)
         
         #saving to pickle
         df.to_pickle(pk_path)
@@ -35,5 +35,11 @@ def save_in_df(img, embedding, img_id, h, w, c, avg_color, path=pk_path):
     df.loc[len(df)] = [img_id, embedding, h, w, c, 
 		avg_color[0], avg_color[1], 
 		avg_color[2]]
-    
+    print([img_id, embedding, h, w, c, 
+		avg_color[0], avg_color[1], 
+		avg_color[2]])
     df.to_pickle(pk_path)
+    
+    
+"""no data saved into dataframe yet
+also: need to check if skipping files works here, should tho!"""
