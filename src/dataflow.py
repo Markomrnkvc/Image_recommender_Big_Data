@@ -37,6 +37,7 @@ pk_path = join(current_path, pk_file)
 def dataflow(args):
     create_csv(args, csv_path)
     create_pk(pk_path)
+    
     try:
         gen = next(image_generator(args))
         if gen == None:

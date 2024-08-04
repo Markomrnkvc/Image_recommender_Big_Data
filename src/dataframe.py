@@ -31,10 +31,10 @@ def save_in_df(embedding, image_id, h, w, c, avg_color, path):
 		avg_color[2]]
     
     
-    print(df)
-    print([image_id, embedding, h, w, c, 
+    #print(df)
+    """print([image_id, embedding, h, w, c, 
 		avg_color[0], avg_color[1], 
-		avg_color[2]])
+		avg_color[2]])"""
     
     df.to_pickle(path)
     

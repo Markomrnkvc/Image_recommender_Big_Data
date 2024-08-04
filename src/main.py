@@ -29,3 +29,8 @@ args = parser.parse_args()
 #if args.mode == "generator":
 
 dataflow(args)
+
+
+"""TO DO:
+        data is not getting loaded into pickle file 
+        IDs of data in csv are wrong """
