@@ -19,9 +19,9 @@ def create_pk(pk_path):
         #saving to pickle
         df.to_pickle(pk_path)
         
-def save_in_df(embedding, image_id, h, w, c, avg_color, path):
+def save_in_df(embedding, image_id, h, w, c, avg_color, df):
     #opening pickle file
-    df = pd.read_pickle(path)
+    #df = pd.read_pickle(path)
     
     embedding=randint(0,1000) #need placeholder value, no embeddings yet
     
@@ -37,6 +37,7 @@ def save_in_df(embedding, image_id, h, w, c, avg_color, path):
 		avg_color[0], avg_color[1], 
 		avg_color[2]])"""
     
-    df.to_pickle(path)
+    #df.to_pickle(path)
+    
     
     

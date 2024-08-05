@@ -18,7 +18,7 @@ import numpy
 import csv 
 from tqdm import tqdm
 import random
-
+import pandas as pd
 #ID for each image, refered to in csv-file
 #image_id = 0
 
@@ -45,6 +45,9 @@ def dataflow(args):
                 return
         #print(next(image_generator(args)))
         
+        #opening pickle
+        df = pd.read_pickle(pk_path)
+        
         for img ,image_path, image_id in image_generator(args):
             print(image_id)
             #getting data out of images
@@ -55,8 +58,19 @@ def dataflow(args):
             
             #saving data in pickle file
             embedding = random.randint(0,1000) #need placeholder, no embeddings yet
-            save_in_df(embedding, image_id, h, w, c, avg_color, pk_path)
+            
+            save_in_df(embedding, image_id, h, w, c, avg_color, df)
+            
+            
+            if image_id % 50 == 0:
+                #closing pickle to save
+                df.to_pickle(pk_path)
+                #opening pickle
+                df = pd.read_pickle(pk_path)
+                
             print("\nimage data loaded into csv") 
+        #closing pickle at end of generator to save
+        df.to_pickle(pk_path)
     except:
         StopIteration
         print("\nno new images to load into database")
