@@ -49,29 +49,40 @@ def dataflow(args):
         df = pd.read_pickle(pk_path)
         
         for img ,image_path, image_id in image_generator(args):
-            print(image_id)
+            #print(image_id)
             #getting data out of images
-            image_id, image_path, h, w, c, avg_color = get_data(args, img, image_path, image_id, csv_path)
-            #writing data into csv
-            data_writer(image_id, image_path, h, w, c, avg_color, csv_path)
-            
-            
-            #saving data in pickle file
-            embedding = random.randint(0,1000) #need placeholder, no embeddings yet
-            
-            save_in_df(embedding, image_id, h, w, c, avg_color, df)
-            
-            #closing pickle after 50 images to save progress
-            if image_id % 50 == 0:
-                #closing pickle to save
-                df.to_pickle(pk_path)
-                #opening pickle
-                df = pd.read_pickle(pk_path)
+            try:
+                image_id, image_path, h, w, c, avg_color = get_data(args, img, image_path, image_id, csv_path)
+                #writing data into csv
+                data_writer(image_id, image_path, h, w, c, avg_color, csv_path)
                 
-            print("\nimage data loaded into csv") 
+                
+                #saving data in pickle file
+                embedding = random.randint(0,1000) #need placeholder, no embeddings yet
+                
+                save_in_df(embedding, image_id, h, w, c, avg_color, df)
+                
+                #closing pickle after 50 images to save progress
+                if image_id % 50 == 0:
+                    #closing pickle to save
+                    df.to_pickle(pk_path)
+                    #opening pickle
+                    df = pd.read_pickle(pk_path)
+            except:
+                AttributeError
+                print(f"\nError loading image {image_path}")
+           
+                
+            #print("\nimage data loaded into csv") 
+        print(f"number currently loaded images: {image_id}")
         #closing pickle at end of generator to save
         df.to_pickle(pk_path)
+
     except:
         StopIteration
-        print("\nno new images to load into database")
+        
+        print(f"\nnumber currently loaded images: {image_id}")
+        #closing pickle at end of generator to save
+        df.to_pickle(pk_path)
+        print("\nno new images to load into database or generator interrupted manually")
 

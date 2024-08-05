@@ -77,7 +77,7 @@ def image_generator(args):#, path = Path("C:/Users/marko/OneDrive/Documents/vier
       for lines in csvFile:
           list_img.append(lines[1])
           current_ID += 1
-          print(current_ID)
+          #print(current_ID)
           """if current_ID == 'ID':
               current_ID = 0"""
               
@@ -94,20 +94,23 @@ def image_generator(args):#, path = Path("C:/Users/marko/OneDrive/Documents/vier
                 #checking if image is already in database
                     if image_path not in list_img:
                         gen_uptodate = True #set to True if one image has not been added to csv yet
-                        print(f"gen_uptodate: {gen_uptodate}")
+                        #print(f"gen_uptodate: {gen_uptodate}")
                         
                 if gen_uptodate == True: #if one is new, all folowing will be new too 
-                    print("new image loaded into csv")
+                    #print("new image loaded into csv")
                     #loading the image
                     img = cv2.imread(image_path) 
                     
                     
-                    
+                    #print(image_path)
+                    #print(current_ID)
                     image_id = current_ID
+                    #print(img)
                     yield img, image_path, image_id
                     
                     #setting ID counter up
                     current_ID += 1
+                    #print(current_ID)
                 
 def get_data(args, img, image_path, image_id, csv_path):
     """
@@ -170,6 +173,8 @@ def generate(args):
     create_csv(args, csv_path)
     try:
         gen = next(image_generator(args))
+        
+        
         if gen == None:
                 print("\nNo new images")
                 return
