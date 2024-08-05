@@ -61,7 +61,7 @@ def dataflow(args):
             
             save_in_df(embedding, image_id, h, w, c, avg_color, df)
             
-            
+            #closing pickle after 50 images to save progress
             if image_id % 50 == 0:
                 #closing pickle to save
                 df.to_pickle(pk_path)
