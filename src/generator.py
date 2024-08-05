@@ -81,6 +81,7 @@ def image_generator(args):#, path = Path("C:/Users/marko/OneDrive/Documents/vier
           """if current_ID == 'ID':
               current_ID = 0"""
               
+    gen_uptodate = False
     # generator that runs image files from our given directory as the parameter
     for root, _, files in os.walk(path):
         
@@ -88,8 +89,13 @@ def image_generator(args):#, path = Path("C:/Users/marko/OneDrive/Documents/vier
             if file.lower().endswith(('png', 'jpg', 'jpeg')):
                 image_path = os.path.join(root, file)
                 
+                if gen_uptodate == False:
                 #checking if image is already in database
-                if image_path not in list_img:
+                    if image_path not in list_img:
+                        gen_uptodate = True
+                        print(f"gen_uptodate: {gen_uptodate}")
+                        
+                if gen_uptodate == True:
                     print("new image loaded into csv")
                     #loading the image
                     img = cv2.imread(image_path) 
