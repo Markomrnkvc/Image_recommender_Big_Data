@@ -81,7 +81,8 @@ def image_generator(args):#, path = Path("C:/Users/marko/OneDrive/Documents/vier
           """if current_ID == 'ID':
               current_ID = 0"""
               
-    gen_uptodate = False
+    gen_uptodate = False #variable we use to check if the generator is yielding new images or old ones
+    
     # generator that runs image files from our given directory as the parameter
     for root, _, files in os.walk(path):
         
@@ -89,13 +90,13 @@ def image_generator(args):#, path = Path("C:/Users/marko/OneDrive/Documents/vier
             if file.lower().endswith(('png', 'jpg', 'jpeg')):
                 image_path = os.path.join(root, file)
                 
-                if gen_uptodate == False:
+                if gen_uptodate == False: #generator still yielding old images
                 #checking if image is already in database
                     if image_path not in list_img:
-                        gen_uptodate = True
+                        gen_uptodate = True #set to True if one image has not been added to csv yet
                         print(f"gen_uptodate: {gen_uptodate}")
                         
-                if gen_uptodate == True:
+                if gen_uptodate == True: #if one is new, all folowing will be new too 
                     print("new image loaded into csv")
                     #loading the image
                     img = cv2.imread(image_path) 
