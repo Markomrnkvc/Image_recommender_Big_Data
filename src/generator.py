@@ -29,27 +29,14 @@ from tqdm import tqdm
 image_id = 0
 #path to csv-file
 csv_file = "csv\images.csv" #"C:/Users/marko/OneDrive/Documents/viertes_Semester/Big_Data/Image_recommender_Big_Data/src/csv/images.csv"
+error_file = "csv\error_images.csv"
 current_path = os.getcwd()
 csv_path = join(current_path, csv_file)
+error_path = join(current_path, error_file)
 
 def create_csv(args, csv_path):
     # Check whether the CSV 
     # exists or not if not then create one. 
-    #my_images = args.folder #Path("C:/Users/marko/OneDrive/Documents/viertes_Semester/Big_Data/image_recomender/csv/images.csv") 
-
-    #opening csv if existing, writing headers
-    """if os.path.exists(csv_path):
-            
-        	f = open(csv_path, "w+") 
-        	with open(csv_path, 'a', newline='') as file: 
-        		
-        		writer.writerow(["ID", "Name", "Height", 
-        						"Width", "Channels", 
-        						"Avg Blue", "Avg Red", 
-        						"Avg Green"]) 
-        	f.close() 
-        	return 	writer = csv.writer(file) """
-        	
     
     #creating csv if not existing
     if os.path.exists(csv_path) == False: 
@@ -60,6 +47,12 @@ def create_csv(args, csv_path):
     						"Width", "Channels", 
     						"Avg Blue", "Avg Red", 
     						"Avg Green"]) 
+    #creating csv if not existing
+    if os.path.exists(error_path) == False: 
+    	with open(error_path, 'w', newline = '') as file: 
+    		writer = csv.writer(file) 
+    		
+    		writer.writerow(["Name"]) 
             
 def image_generator(args):#, path = Path("C:/Users/marko/OneDrive/Documents/viertes_Semester/Big_Data/Image_recommender_Big_Data/src/images")):
     
@@ -68,6 +61,7 @@ def image_generator(args):#, path = Path("C:/Users/marko/OneDrive/Documents/vier
         
     #creating a list with all paths already loaded into csv
     list_img = []
+    error_list_img = []
     current_ID = -1
     #C:\Users\marko\Documents\viertes_semester\BigData\Image_recommender_Big_Data\src\csv
     #C:/Users/marko/Documents/viertes_Semester/Big_Data/Image_recommender_Big_Data/src/
@@ -77,23 +71,27 @@ def image_generator(args):#, path = Path("C:/Users/marko/OneDrive/Documents/vier
       for lines in csvFile:
           list_img.append(lines[1])
           current_ID += 1
-          #print(current_ID)
-          """if current_ID == 'ID':
-              current_ID = 0"""
+    
+    
+    with open('csv/error_images.csv', mode ='r')as file:
+      csvFile = csv.reader(file)
+      
+      for lines in csvFile:
+          error_list_img.append(lines[0])
               
     gen_uptodate = False #variable we use to check if the generator is yielding new images or old ones
     
     # generator that runs image files from our given directory as the parameter
     for root, _, files in os.walk(path):
         
-        #for file in tqdm(files, total=len(files)):
-        for file in files:
+        for file in tqdm(files, total=len(files)):
+        #for file in files:
             if file.lower().endswith(('png', 'jpg', 'jpeg')):
                 image_path = os.path.join(root, file)
                 
                 if gen_uptodate == False: #generator still yielding old images
                 #checking if image is already in database
-                    if image_path not in list_img:
+                    if image_path not in list_img and image_path not in error_list_img:
                         gen_uptodate = True #set to True if one image has not been added to csv yet
                         #print(f"gen_uptodate: {gen_uptodate}")
                         

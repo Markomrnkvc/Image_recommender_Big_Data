@@ -27,10 +27,13 @@ current_path = os.getcwd()
 
 #path to csv-file
 csv_file = "csv\images.csv" #"C:/Users/marko/OneDrive/Documents/viertes_Semester/Big_Data/Image_recommender_Big_Data/src/csv/images.csv"
+error_file = "csv\error_images.csv"
+
 #path to pickle file
 pk_file = "pickle\data.pk"
 
 csv_path = join(current_path, csv_file)
+error_path = join(current_path, error_file)
 pk_path = join(current_path, pk_file)
 
 #method which combines the workflow of generating images and saving the wanted data into a csv
@@ -48,8 +51,8 @@ def dataflow(args):
         #opening pickle
         df = pd.read_pickle(pk_path)
         
-        for img ,image_path, image_id in tqdm(image_generator(args), total=444880):
-        #for img ,image_path, image_id in image_generator(args):
+        #for img ,image_path, image_id in tqdm(image_generator(args), total=444880):
+        for img ,image_path, image_id in image_generator(args):
             #print(image_id)
             #getting data out of images
             try:
@@ -72,17 +75,22 @@ def dataflow(args):
             except:
                 AttributeError
                 print(f"\nError loading image {image_path}")
+                
+                with open(error_path, 'a', newline = '') as file: 
+               		writer = csv.writer(file) 
+               		writer.writerow([image_path]) 
+                file.close() 
            
                 
             #print("\nimage data loaded into csv") 
-        print(f"number currently loaded images: {image_id}")
+        print(f"number currently loaded images: {image_id}, {image_path}")
         #closing pickle at end of generator to save
         df.to_pickle(pk_path)
 
     except:
         StopIteration
         
-        print(f"\nnumber currently loaded images: {image_id}")
+        print(f"\nnumber currently loaded images: {image_id}, {image_path}")
         #closing pickle at end of generator to save
         df.to_pickle(pk_path)
         print("\nno new images to load into database or generator interrupted manually")
