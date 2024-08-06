@@ -21,18 +21,19 @@ import csv
 from tqdm import tqdm
 import numpy as np
 
-
 #ID for each image, refered to in csv-file
 image_id = 0
 
-csv_file = "csv\images.csv" #"C:/Users/marko/OneDrive/Documents/viertes_Semester/Big_Data/Image_recommender_Big_Data/src/csv/images.csv"
-current_path = os.getcwd()
-csv_path = join(current_path, csv_file)
+csv_file = Path("csv/images.csv") #"csv/images.csv"
+current_path = Path(os.getcwd())
+csv_path = Path(join(current_path, csv_file))
+print(type(csv_path))
 
-def create_csv(csv_path):
+def create_csv(args, csv_path):
     # Check whether the CSV 
     # exists or not if not then create one. 
-        	
+    #my_images = args.folder #Path("C:/Users/marko/OneDrive/Documents/viertes_Semester/Big_Data/image_recomender/csv/images.csv") 
+
     #creating csv if not existing
     if not csv_path.exists():
         with open(csv_path, 'w', newline='') as file:
@@ -88,12 +89,12 @@ def image_generator(args):
                     current_ID += 1
                     #print(current_ID)
 
-def image_generator_with_batch_MARIE(args.folder, args.batch_size):
+"""def image_generator_with_batch_MARIE(args.folder, args.batch_size):
 
-    """to Marko:
+    to Marko:
     this is the image_generator function but with batch function.
     your latest changes are not included yet,
-    maybe you can have a look at how to do this? I was not sure"""
+    maybe you can have a look at how to do this? I was not sure
 
     path = Path(args.folder)
     batch = []
@@ -108,7 +109,7 @@ def image_generator_with_batch_MARIE(args.folder, args.batch_size):
                     yield batch
                     batch = []
     if batch:
-        yield batch
+        yield batch"""
                 
 def get_data(args, img, image_path, image_id, csv_path):
     """
@@ -175,6 +176,14 @@ def get_data_MARIE(image_path, image_id, csv_path):
         writer = csv.writer(file)
         writer.writerow([image_id, image_path, h, w, c, avg_color[0], avg_color[1], avg_color[2]])
 
+def data_writer(image_id, image_path, h, w, c, avg_color, csv_path):
+
+    with open(csv_path, 'a', newline = '') as file: 
+           writer = csv.writer(file) 
+           writer.writerow([image_id, image_path, h, w, c, 
+                           avg_color[0], avg_color[1], 
+                           avg_color[2]]) 
+    file.close()
 
 """
 #method which combines the workflow of generating images and saving the wanted data into a csv
