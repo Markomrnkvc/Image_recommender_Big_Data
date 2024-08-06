@@ -4,9 +4,10 @@ Created on Tue Jun  4 02:57:50 2024
 
 @author: marko
 """
+from dataflow import dataflow
 
 import argparse
-from generator import generate
+
 
 # NOTE: This is the main file, you propably don't need to change anything here
 
@@ -26,7 +27,10 @@ args = parser.parse_args()
 
 # Switch control flow based on arguments
 #if args.mode == "generator":
-generate(args)
 
-"""if args.mode == "recomender":
-    recomender(args)"""
+dataflow(args)
+
+
+"""TO DO:
+        data is not getting loaded into pickle file 
+        IDs of data in csv are wrong """
