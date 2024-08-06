@@ -11,7 +11,7 @@ und durch folder iterieren kann"""
 # Required Libraries 
 
 import os
-from os.path import join, isfile
+from os.path import join, exists, isfile
 from pathlib import Path 
 import numpy 
 import cv2 
@@ -35,7 +35,7 @@ def create_csv(args, csv_path):
     #my_images = args.folder #Path("C:/Users/marko/OneDrive/Documents/viertes_Semester/Big_Data/image_recomender/csv/images.csv") 
 
     #creating csv if not existing
-    if not csv_path.exists():
+    if not os.path.exists(csv_path):
         with open(csv_path, 'w', newline='') as file:
             writer = csv.writer(file)
             writer.writerow(["ID", "Name", "Height", "Width", "Channels", "Avg Blue", "Avg Red", "Avg Green"])
@@ -49,7 +49,7 @@ def image_generator(args):
     current_ID = -1
     #C:\Users\marko\Documents\viertes_semester\BigData\Image_recommender_Big_Data\src\csv
     #C:/Users/marko/Documents/viertes_Semester/Big_Data/Image_recommender_Big_Data/src/
-    with open('csv/images.csv', mode ='r')as file:
+    with open(csv_path, mode ='r')as file:
       csvFile = csv.reader(file)
       
       for lines in csvFile:
