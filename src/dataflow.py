@@ -48,7 +48,8 @@ def dataflow(args):
         #opening pickle
         df = pd.read_pickle(pk_path)
         
-        for img ,image_path, image_id in image_generator(args):
+        for img ,image_path, image_id in tqdm(image_generator(args), total=444880):
+        #for img ,image_path, image_id in image_generator(args):
             #print(image_id)
             #getting data out of images
             try:

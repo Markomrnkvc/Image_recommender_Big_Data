@@ -86,7 +86,8 @@ def image_generator(args):#, path = Path("C:/Users/marko/OneDrive/Documents/vier
     # generator that runs image files from our given directory as the parameter
     for root, _, files in os.walk(path):
         
-        for file in tqdm(files, total=len(files)):
+        #for file in tqdm(files, total=len(files)):
+        for file in files:
             if file.lower().endswith(('png', 'jpg', 'jpeg')):
                 image_path = os.path.join(root, file)
                 
