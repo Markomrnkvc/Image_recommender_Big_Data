@@ -45,11 +45,21 @@ def image_generator(args):
 
     #creating a list with all paths already loaded into csv
     list_img = []
+    current_ID = -1
+    #C:\Users\marko\Documents\viertes_semester\BigData\Image_recommender_Big_Data\src\csv
+    #C:/Users/marko/Documents/viertes_Semester/Big_Data/Image_recommender_Big_Data/src/
     with open('csv/images.csv', mode ='r')as file:
       csvFile = csv.reader(file)
+      
       for lines in csvFile:
           list_img.append(lines[1])
-        
+          current_ID += 1
+          #print(current_ID)
+          """if current_ID == 'ID':
+              current_ID = 0"""
+              
+    gen_uptodate = False #variable we use to check if the generator is yielding new images or old ones
+    
     # generator that runs image files from our given directory as the parameter
     for root, _, files in os.walk(path):
         
@@ -57,17 +67,26 @@ def image_generator(args):
             if file.lower().endswith(('png', 'jpg', 'jpeg')):
                 image_path = os.path.join(root, file)
                 
+                if gen_uptodate == False: #generator still yielding old images
                 #checking if image is already in database
-                if image_path not in list_img:
-                    print("image in csv")
+                    if image_path not in list_img:
+                        gen_uptodate = True #set to True if one image has not been added to csv yet
+                        #print(f"gen_uptodate: {gen_uptodate}")
+                        
+                if gen_uptodate == True: #if one is new, all folowing will be new too 
+                    #print("new image loaded into csv")
                     #loading the image
                     img = cv2.imread(image_path) 
                     
-                    #setting counter up
-                    global image_id 
-                    image_id += 1
                     
+                    #print(image_path)
+                    #print(current_ID)
+                    image_id = current_ID
+                    #print(img)
                     yield img, image_path, image_id
+                    #setting ID counter up
+                    current_ID += 1
+                    #print(current_ID)
 
 def image_generator_with_batch_MARIE(args.folder, args.batch_size):
 
@@ -163,6 +182,8 @@ def generate(args):
     create_csv(args, csv_path)
     try:
         gen = next(image_generator(args))
+        
+        
         if gen == None:
                 print("\nNo new images")
                 return
