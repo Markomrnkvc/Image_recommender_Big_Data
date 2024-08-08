@@ -48,6 +48,7 @@ def dataflow(args):
         #opening pickle
         df = pd.read_pickle(pk_path)
         
+
         for img ,image_path, image_id in image_generator(args):
             #print(image_id)
             #getting data out of images
