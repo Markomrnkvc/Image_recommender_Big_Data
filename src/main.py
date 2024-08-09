@@ -19,8 +19,8 @@ parser = argparse.ArgumentParser(
 )
 
 #parser.add_argument("mode", choices=["generator", "recomender"])
-parser.add_argument("-f", "--folder")
-parser.add_argument("-b", "--batch_size", action="store", default=0.1)
+parser.add_argument("-f", "--folder", help="Path to folder containing the images")
+parser.add_argument("-b", "--batch_size", action="store", default=500, help="Batch size for processing images")
 
 # Parse the arguments from the command line
 args = parser.parse_args()
