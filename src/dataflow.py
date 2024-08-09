@@ -26,9 +26,9 @@ import pandas as pd
 current_path = os.getcwd()
 
 #path to csv-file
-csv_file = "csv\images.csv" #"C:/Users/marko/OneDrive/Documents/viertes_Semester/Big_Data/Image_recommender_Big_Data/src/csv/images.csv"
+csv_file = "csv/images.csv" #"C:/Users/marko/OneDrive/Documents/viertes_Semester/Big_Data/Image_recommender_Big_Data/src/csv/images.csv"
 #path to pickle file
-pk_file = "pickle\data.pk"
+pk_file = "pickle/data.pk"
 
 csv_path = join(current_path, csv_file)
 pk_path = join(current_path, pk_file)
