@@ -20,10 +20,11 @@ def fetch_data():
         cursor = connection.cursor()
 
         #actual query, changeable to your desire
+        #check if there are duplicate names: SELECT name, COUNT(name) AS count FROM images GROUP BY name HAVING COUNT(name) > 1;
         query = """
-        SELECT * FROM images
-        ORDER BY id DESC
-        LIMIT 10;
+            SELECT * FROM images
+            ORDER BY id DESC
+            LIMIT 10;
         """
         cursor.execute(query)
         rows = cursor.fetchall()

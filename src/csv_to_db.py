@@ -1,5 +1,8 @@
 import psycopg2
 import csv
+from pathlib import Path 
+
+csv_path = Path("src/csv/images.csv")
 
 def create_table(conn):
     """Create table in PostgreSQL"""
@@ -9,13 +12,7 @@ def create_table(conn):
         """
         CREATE TABLE IF NOT EXISTS images (
             id SERIAL PRIMARY KEY,
-            name VARCHAR(255) NOT NULL,
-            height INTEGER NOT NULL,
-            width INTEGER NOT NULL,
-            channels INTEGER NOT NULL,
-            avg_blue FLOAT NOT NULL,
-            avg_red FLOAT NOT NULL,
-            avg_green FLOAT NOT NULL
+            name VARCHAR(255) NOT NULL
         )
         """,
     )
@@ -36,10 +33,23 @@ def import_csv_to_db(conn, csv_path):
         next(reader)  # skip header row
         cur = conn.cursor()
         for row in reader:
-            cur.execute(
-                "INSERT INTO images (id, name, height, width, channels, avg_blue, avg_red, avg_green) VALUES (%s, %s, %s, %s, %s, %s, %s, %s)",
-                row
-            )
+            # only take the first 2 columns (id, name)
+            row_to_insert = row[:2]
+            
+            # double check if there are only 2 values
+            if len(row_to_insert) == 2:
+                cur.execute(
+                    "INSERT INTO images (id, name) VALUES (%s, %s)",
+                    row_to_insert
+                )
+            else:
+                print(f"Unexpected row length: {len(row_to_insert)} elements")
+
+        #for row in reader:
+            #cur.execute(
+                #"INSERT INTO images (id, name) VALUES (%s, %s)",
+                #row
+            #)
         conn.commit()
         cur.close()
 
@@ -58,7 +68,6 @@ def main():
         create_table(conn)
         
         # import CSV to DB
-        csv_path = "csv/images.csv"
         import_csv_to_db(conn, csv_path)
 
     except (Exception, psycopg2.DatabaseError) as error:
