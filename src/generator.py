@@ -11,7 +11,7 @@ und durch folder iterieren kann"""
 # Required Libraries 
 
 import os
-from os.path import join, isfile
+from os.path import join, exists, isfile
 from pathlib import Path 
 import numpy 
 import cv2 
@@ -19,14 +19,11 @@ import argparse
 import numpy 
 import csv 
 from tqdm import tqdm
-#from Pil import Image
-#from main import args
-
-#path of csv file for saving metadata
-#my_file = args.folder #Path("C:/Users/marko/OneDrive/Documents/viertes_Semester/Big_Data/image_recomender/csv/images.csv") 
+import numpy as np
 
 #ID for each image, refered to in csv-file
 image_id = 0
+
 #path to csv-file
 csv_file = "csv\images.csv" #"C:/Users/marko/OneDrive/Documents/viertes_Semester/Big_Data/Image_recommender_Big_Data/src/csv/images.csv"
 error_file = "csv\error_images.csv"
@@ -37,6 +34,7 @@ error_path = join(current_path, error_file)
 def create_csv(args, csv_path):
     # Check whether the CSV 
     # exists or not if not then create one. 
+
     
     #creating csv if not existing
     if os.path.exists(csv_path) == False: 
@@ -54,18 +52,17 @@ def create_csv(args, csv_path):
     		
     		writer.writerow(["Name"]) 
             
-def image_generator(args):#, path = Path("C:/Users/marko/OneDrive/Documents/viertes_Semester/Big_Data/Image_recommender_Big_Data/src/images")):
+def image_generator(args):
     
-    #if args.folder == True:
     path = Path(args.folder)
-        
+
     #creating a list with all paths already loaded into csv
     list_img = []
     error_list_img = []
     current_ID = -1
     #C:\Users\marko\Documents\viertes_semester\BigData\Image_recommender_Big_Data\src\csv
     #C:/Users/marko/Documents/viertes_Semester/Big_Data/Image_recommender_Big_Data/src/
-    with open('csv/images.csv', mode ='r')as file:
+    with open(csv_path, mode ='r')as file:
       csvFile = csv.reader(file)
       
       for lines in csvFile:
@@ -106,10 +103,31 @@ def image_generator(args):#, path = Path("C:/Users/marko/OneDrive/Documents/vier
                     image_id = current_ID
                     #print(img)
                     yield img, image_path, image_id
-                    
                     #setting ID counter up
                     current_ID += 1
                     #print(current_ID)
+
+"""def image_generator_with_batch_MARIE(args.folder, args.batch_size):
+
+    to Marko:
+    this is the image_generator function but with batch function.
+    your latest changes are not included yet,
+    maybe you can have a look at how to do this? I was not sure
+
+    path = Path(args.folder)
+    batch = []
+    for root, _, files in os.walk(path):
+        for file in files:
+            if file.lower().endswith(('png', 'jpg', 'jpeg')):
+                image_path = os.path.join(root, file)
+                global image_id
+                image_id += 1
+                batch.append((image_path, image_id))
+                if len(batch) == args.batch_size:
+                    yield batch
+                    batch = []
+    if batch:
+        yield batch"""
                 
 def get_data(args, img, image_path, image_id, csv_path):
     """
@@ -155,16 +173,35 @@ def get_data(args, img, image_path, image_id, csv_path):
    						avg_color[2]]) 
     file.close() """
     return image_id, image_path, h, w, c, avg_color
-   
-def data_writer(image_id, image_path, h, w, c, avg_color, csv_path):
-    
-    with open(csv_path, 'a', newline = '') as file: 
-   		writer = csv.writer(file) 
-   		writer.writerow([image_id, image_path, h, w, c, 
-   						avg_color[0], avg_color[1], 
-   						avg_color[2]]) 
-    file.close() 
 
+def get_data_MARIE(image_path, image_id, csv_path):
+
+    """same here: I'm not sure what you want to keep from the function above,
+    but I figured it should work with this too.
+    But I also only tried it with the rest of my code which
+    was not quite the same"""
+
+    # load the image
+    img = cv2.imread(image_path)
+
+    #get the shape and color data
+    h, w, c = img.shape
+    avg_color_per_row = np.average(img, axis=0)
+    avg_color = np.average(avg_color_per_row, axis=0)
+    
+    #write the data into the csv
+    with open(csv_path, 'a', newline='') as file:
+        writer = csv.writer(file)
+        writer.writerow([image_id, image_path, h, w, c, avg_color[0], avg_color[1], avg_color[2]])
+
+def data_writer(image_id, image_path, h, w, c, avg_color, csv_path):
+
+    with open(csv_path, 'a', newline = '') as file: 
+           writer = csv.writer(file) 
+           writer.writerow([image_id, image_path, h, w, c, 
+                           avg_color[0], avg_color[1], 
+                           avg_color[2]]) 
+    file.close()
 
 """
 #method which combines the workflow of generating images and saving the wanted data into a csv
