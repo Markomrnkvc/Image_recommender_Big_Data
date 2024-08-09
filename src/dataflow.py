@@ -6,6 +6,7 @@ Created on Thu Jun 27 02:36:11 2024
 """
 from generator import create_csv, image_generator, get_data, data_writer
 from dataframe import create_pk, save_in_df
+import generator
 
 
 import os
@@ -36,6 +37,7 @@ csv_path = join(current_path, csv_file)
 error_path = join(current_path, error_file)
 pk_path = join(current_path, pk_file)
 
+image_id = 0
 #method which combines the workflow of generating images and saving the wanted data into a csv
 def dataflow(args):
     create_csv(args, csv_path)
@@ -46,7 +48,6 @@ def dataflow(args):
         if gen == None:
                 print("\nNo new images")
                 return
-        #print(next(image_generator(args)))
         
         #opening pickle
         df = pd.read_pickle(pk_path)
