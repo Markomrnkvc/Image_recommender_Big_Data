@@ -31,7 +31,7 @@ csv_file = "csv\images.csv" #"C:/Users/marko/OneDrive/Documents/viertes_Semester
 error_file = "csv\error_images.csv"
 
 #path to pickle file
-pk_file = "pickle\data.pk"
+pk_file = "pickle/data.pk"
 
 csv_path = join(current_path, csv_file)
 error_path = join(current_path, error_file)
@@ -52,6 +52,7 @@ def dataflow(args):
         #opening pickle
         df = pd.read_pickle(pk_path)
         
+
         #for img ,image_path, image_id in tqdm(image_generator(args), total=444880):
         for img ,image_path, image_id in image_generator(args):
             #print(image_id)
