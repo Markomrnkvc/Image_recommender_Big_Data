@@ -63,6 +63,7 @@ def dataflow(args):
                 
                 #calculating histogram of the image
                 histogram = hist(img)
+                
                 #writing data into csv
                 data_writer(image_id, image_path, h, w, c, avg_color, histogram, csv_path)
                 

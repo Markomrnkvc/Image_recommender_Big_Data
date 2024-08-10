@@ -44,7 +44,7 @@ def create_csv(args, csv_path):
     		writer.writerow(["ID", "Name", "Height", 
     						"Width", "Channels", 
     						"Avg Blue", "Avg Red", 
-    						"Avg Green", "RGB_histogram"]) 
+    						"Avg Green", "RGB_Histogram"]) 
     #creating csv if not existing
     if os.path.exists(error_path) == False: 
     	with open(error_path, 'w', newline = '') as file: 
@@ -107,42 +107,9 @@ def image_generator(args):
                     current_ID += 1
                     #print(current_ID)
 
-"""def image_generator_with_batch_MARIE(args.folder, args.batch_size):
-
-    to Marko:
-    this is the image_generator function but with batch function.
-    your latest changes are not included yet,
-    maybe you can have a look at how to do this? I was not sure
-
-    path = Path(args.folder)
-    batch = []
-    for root, _, files in os.walk(path):
-        for file in files:
-            if file.lower().endswith(('png', 'jpg', 'jpeg')):
-                image_path = os.path.join(root, file)
-                global image_id
-                image_id += 1
-                batch.append((image_path, image_id))
-                if len(batch) == args.batch_size:
-                    yield batch
-                    batch = []
-    if batch:
-        yield batch"""
                 
 def get_data(args, img, image_path, image_id, csv_path):
-    """
-    # Argparse function to get 
-    # the path of the image directory 
-    ap = argparse.ArgumentParser() 
     
-    ap.add_argument("-f", "--folder", 
-    				required = True, 
-    				help = "Path to folder") 
-    ap.add_argument("-b", "--batch_size", 
-                    required= False,
-                    help = "Number of images to load")
-    
-    args = vars(ap.parse_args()) """
     
         
     # Program to find the 
@@ -159,19 +126,11 @@ def get_data(args, img, image_path, image_id, csv_path):
     #print(img)
     h,w,c = img.shape
     
-    """img_o = Image.open(image_path)
-    form = img_o.format"""
        
     avg_color_per_row = numpy.average(img, axis = 0) 
     avg_color = numpy.average(avg_color_per_row, axis = 0) 
     #img_name = os.path.basename(image_path) #only img name, without whole path
    	
-    """with open(csv_path, 'a', newline = '') as file: 
-   		writer = csv.writer(file) 
-   		writer.writerow([image_id, image_path, h, w, c, 
-   						avg_color[0], avg_color[1], 
-   						avg_color[2]]) 
-    file.close() """
     return image_id, image_path, h, w, c, avg_color
 
 
@@ -183,29 +142,3 @@ def data_writer(image_id, image_path, h, w, c, avg_color, histogram, csv_path):
                            avg_color[0], avg_color[1], 
                            avg_color[2]], histogram) 
     file.close()
-
-"""
-#method which combines the workflow of generating images and saving the wanted data into a csv
-def generate(args):
-    create_csv(args, csv_path)
-    try:
-        gen = next(image_generator(args))
-        
-        
-        if gen == None:
-                print("\nNo new images")
-                return
-        #print(next(image_generator(args)))
-        
-        for img ,image_path, image_id in image_generator(args):
-            print(image_id)
-            #getting data out of images
-            image_id, image_path, h, w, c, avg_color = get_data(args, img, image_path, image_id, csv_path)
-            #writing data into csv
-            data_writer(image_id, image_path, h, w, c, avg_color, csv_path)
-            print("\nimage data loaded into csv") 
-    except:
-        StopIteration
-        print("\nno new images to load into database")"""
-     
-    
