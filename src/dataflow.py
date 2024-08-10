@@ -7,6 +7,7 @@ Created on Thu Jun 27 02:36:11 2024
 from generator import create_csv, image_generator, get_data, data_writer
 from dataframe import create_pk, save_in_df
 import generator
+from histograms import hist
 
 
 import os
@@ -59,8 +60,11 @@ def dataflow(args):
             #getting data out of images
             try:
                 image_id, image_path, h, w, c, avg_color = get_data(args, img, image_path, image_id, csv_path)
+                
+                #calculating histogram of the image
+                histogram = hist(img)
                 #writing data into csv
-                data_writer(image_id, image_path, h, w, c, avg_color, csv_path)
+                data_writer(image_id, image_path, h, w, c, avg_color, histogram, csv_path)
                 
                 
                 #saving data in pickle file

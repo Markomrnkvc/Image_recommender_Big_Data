@@ -44,7 +44,7 @@ def create_csv(args, csv_path):
     		writer.writerow(["ID", "Name", "Height", 
     						"Width", "Channels", 
     						"Avg Blue", "Avg Red", 
-    						"Avg Green"]) 
+    						"Avg Green", "RGB_histogram"]) 
     #creating csv if not existing
     if os.path.exists(error_path) == False: 
     	with open(error_path, 'w', newline = '') as file: 
@@ -174,33 +174,14 @@ def get_data(args, img, image_path, image_id, csv_path):
     file.close() """
     return image_id, image_path, h, w, c, avg_color
 
-def get_data_MARIE(image_path, image_id, csv_path):
 
-    """same here: I'm not sure what you want to keep from the function above,
-    but I figured it should work with this too.
-    But I also only tried it with the rest of my code which
-    was not quite the same"""
-
-    # load the image
-    img = cv2.imread(image_path)
-
-    #get the shape and color data
-    h, w, c = img.shape
-    avg_color_per_row = np.average(img, axis=0)
-    avg_color = np.average(avg_color_per_row, axis=0)
-    
-    #write the data into the csv
-    with open(csv_path, 'a', newline='') as file:
-        writer = csv.writer(file)
-        writer.writerow([image_id, image_path, h, w, c, avg_color[0], avg_color[1], avg_color[2]])
-
-def data_writer(image_id, image_path, h, w, c, avg_color, csv_path):
+def data_writer(image_id, image_path, h, w, c, avg_color, histogram, csv_path):
 
     with open(csv_path, 'a', newline = '') as file: 
            writer = csv.writer(file) 
            writer.writerow([image_id, image_path, h, w, c, 
                            avg_color[0], avg_color[1], 
-                           avg_color[2]]) 
+                           avg_color[2]], histogram) 
     file.close()
 
 """
