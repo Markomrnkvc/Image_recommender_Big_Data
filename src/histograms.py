@@ -10,20 +10,31 @@ import cv2 as cv
 from matplotlib import pyplot as plt
 from sklearn.metrics.pairwise import cosine_similarity
 
-img = cv.imread("D:\data\image_data\extra_collection\electronics\jeswin-thomas-dfRrpfYD8Iw-unsplash.jpg")
 
+    
 def hist(img):
+    
     """Function which calculates the histogram for RGB images
     and returns a flattened histogram vector including all three channels"""
+    def calchist(img):
+        hist_r = cv.calcHist([img], [0], None, [256], [0, 256]).flatten()
+        hist_g = cv.calcHist([img], [1], None, [256], [0, 256]).flatten()
+        hist_b = cv.calcHist([img], [2], None, [256], [0, 256]).flatten()
+        
+        return hist_r, hist_g ,hist_b
     
-    color = ('b','g','r')
-    for i,col in enumerate(color):
-        histogram = cv.calcHist([img],[i],None,[256],[0,256])
-        
-        
-        histogram = histogram.flatten()
-        
-    return histogram, col
+    hist_r, hist_g ,hist_b = calchist(img)
+
+    #normalisieren der Daten
+    hist_r /= hist_r.sum()
+    hist_g /= hist_g.sum()
+    hist_b /= hist_b.sum()
+    
+    #vereinen der Vektoren
+    hist = np.concatenate([hist_r, hist_g ,hist_b])
+    
+    return hist
+
 
 
 """
