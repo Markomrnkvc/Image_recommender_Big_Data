@@ -36,28 +36,3 @@ def hist(img):
     return hist
 
 
-
-"""
-
-das kann eig alles weg:
-    
-def plot_hist(histr, col):
-    plt.plot(histr,color = col)
-    plt.xlim([0,256])
-    plt.show()
-
-histr, col = hist(img)
-histr1, col1 = hist(img)
-
-histr = histr.flatten()
-histr1 = histr1.flatten()
-
-print(cosine_similarity([histr], [histr1]))
-
-
-
-
-muss nur noch hinzufügen, dass der vektor dann in die files geladen wird
-
-später brauchen wir noch vergleichfunktonen wie cosine (kann man von sklearn übernehmen [siehe imports] )
-"""

@@ -53,7 +53,7 @@ def dataflow(args):
         #opening pickle
         df = pd.read_pickle(pk_path)
         
-
+    
         #for img ,image_path, image_id in tqdm(image_generator(args), total=444880):
         for img ,image_path, image_id in image_generator(args):
             #print(image_id)
@@ -71,7 +71,7 @@ def dataflow(args):
                 #saving data in pickle file
                 embedding = random.randint(0,1000) #need placeholder, no embeddings yet
                 
-                save_in_df(embedding, image_id, h, w, c, avg_color, df)
+                save_in_df(embedding, image_id, h, w, c, avg_color,histogram, df)
                 
                 #closing pickle after 50 images to save progress
                 if image_id % 50 == 0:
@@ -87,7 +87,7 @@ def dataflow(args):
                		writer = csv.writer(file) 
                		writer.writerow([image_path]) 
                 file.close() 
-           
+               
                 
             #print("\nimage data loaded into csv") 
         print(f"number currently loaded images: {image_id}, {image_path}")

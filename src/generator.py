@@ -81,7 +81,7 @@ def image_generator(args):
     # generator that runs image files from our given directory as the parameter
     for root, _, files in os.walk(path):
         
-        for file in tqdm(files, total=len(files)):
+        for file in tqdm(files, total=444880-current_ID):
         #for file in files:
             if file.lower().endswith(('png', 'jpg', 'jpeg')):
                 image_path = os.path.join(root, file)
@@ -140,5 +140,5 @@ def data_writer(image_id, image_path, h, w, c, avg_color, histogram, csv_path):
            writer = csv.writer(file) 
            writer.writerow([image_id, image_path, h, w, c, 
                            avg_color[0], avg_color[1], 
-                           avg_color[2]], histogram) 
+                           avg_color[2], histogram]) 
     file.close()
