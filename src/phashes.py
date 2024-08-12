@@ -4,6 +4,12 @@ Created on Sun Aug 11 17:05:23 2024
 
 @author: marko
 """
+
+"""following code is based on alexfcoding's GIT repository using perceptual hashes to filter similar images 
+in one folder and removing them.
+Check it out!
+Link: https://github.com/alexfcoding/ImageCleaner
+"""
 import cv2
 from scipy.spatial.distance import hamming
 from matplotlib import pyplot as plt
@@ -11,7 +17,7 @@ import PIL
 import time
 import numpy as np
 
-start = time.time()
+#start = time.time()
 def perceptual_hashes(img, return_img = False):
     def calculate_mean(pixels_list):
         mean = 0
@@ -98,17 +104,17 @@ def perceptual_hashes(img, return_img = False):
 
 """
 Zum ausprobieren:
-"""
+
 img = cv2.imread("D:/data/image_data/Landscapes/00000362_(6).jpg")#"D:\data\image_data\Landscapes\00000021_(6).jpg"
 img_tocompare = cv2.imread("D:/data/image_data/Landscapes/00000363_(6).jpg")
 #img = cv2.imread("C:/Users/marko/Documents/viertes_semester/BigData/Image_recommender_Big_Data/src/images/000000000024.jpg")
-"""
+
 phash_vector, hashed_img = perceptual_hashes(img, return_img=True)
 phash_vector2, hashed_img2 = perceptual_hashes(img_tocompare, return_img=True)
 """
-phash_vector = perceptual_hashes(img)
-phash_vector2= perceptual_hashes(img_tocompare)
-
+#phash_vector = perceptual_hashes(img)
+#phash_vector2= perceptual_hashes(img_tocompare)
+"""
 print(f" hamming: {hamming(phash_vector, phash_vector2)}")
 #print(bits_list)
 
@@ -118,7 +124,7 @@ print(f" hamming: {hamming(phash_vector, phash_vector2)}")
 #measuring time
 end = time.time()
 print(f" runtime: {end - start}")
-"""
+
 fig, (ax1, ax2) = plt.subplots(1, 2)  # 1 row, 2 columns
 
 # Display the first image in the first subplot

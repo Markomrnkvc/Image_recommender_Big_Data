@@ -8,6 +8,7 @@ from generator import create_csv, image_generator, get_data, data_writer
 from dataframe import create_pk, save_in_df
 import generator
 from histograms import hist
+from phashes import perceptual_hashes
 
 
 import os
@@ -21,6 +22,7 @@ import csv
 from tqdm import tqdm
 import random
 import pandas as pd
+
 #ID for each image, refered to in csv-file
 #image_id = 0
 
@@ -64,14 +66,17 @@ def dataflow(args):
                 #calculating histogram of the image
                 histogram = hist(img)
                 
+                #calculating perceptual hashes
+                phash_vector = perceptual_hashes(img)
+                
                 #writing data into csv
-                data_writer(image_id, image_path, h, w, c, avg_color, histogram, csv_path)
+                data_writer(image_id, image_path, h, w, c, avg_color, histogram, phash_vector, csv_path)
                 
                 
                 #saving data in pickle file
                 embedding = random.randint(0,1000) #need placeholder, no embeddings yet
                 
-                save_in_df(embedding, image_id, h, w, c, avg_color,histogram, df)
+                save_in_df(embedding, image_id, h, w, c, avg_color, histogram, phash_vector, df)
                 
                 #closing pickle after 50 images to save progress
                 if image_id % 50 == 0:
@@ -90,7 +95,7 @@ def dataflow(args):
                
                 
             #print("\nimage data loaded into csv") 
-        print(f"number currently loaded images: {image_id}, {image_path}")
+        print(f"number of currently loaded images: {image_id}, {image_path}")
         #closing pickle at end of generator to save
         df.to_pickle(pk_path)
 
