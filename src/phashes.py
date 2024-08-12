@@ -7,14 +7,30 @@ Created on Sun Aug 11 17:05:23 2024
 import cv2
 from scipy.spatial.distance import hamming
 from matplotlib import pyplot as plt
+import PIL
+import time
+import numpy as np
+
+start = time.time()
 
 def calculate_mean(pixels_list):
     mean = 0
     total_pixels = len(pixels_list)
     for i in range(total_pixels):
         mean += pixels_list[i] / total_pixels
+    print(f"mean: {mean}")
     return mean
 
+def average_color(img):
+    plt.imshow(img)
+    avg_color_per_row = np.average(img, axis = 0) 
+    avg_color = np.average(avg_color_per_row, axis = 0) 
+    avg_color = np.mean(avg_color, axis = 0)
+    
+    npmean = np.mean(img)
+    
+    print(f"np mean: {npmean}")
+    print(f"\n avg_color: {avg_color}")
 
 def grab_pixels(squeezed_frame):
     pixels_list = []
@@ -47,23 +63,30 @@ def generate_hash(frame, hash_size = 16):
     frame_squeezed = cv2.cvtColor(frame_squeezed, cv2.COLOR_BGR2GRAY)
     pixels_list = grab_pixels(frame_squeezed)
     mean_color = calculate_mean(pixels_list)
+    avg_color = average_color(frame)
     bits_list = make_bits_list(mean_color, pixels_list)
     hashed_frame = hashify(frame_squeezed, bits_list)
     hashed_frame = cv2.cvtColor(hashed_frame, cv2.COLOR_GRAY2BGR)
     return bits_list, hashed_frame
 
 
-img = cv2.imread("D:/data/image_data/Landscapes/00000362_(6).jpg")#"D:\data\image_data\Landscapes\00000021_(6).jpg"
-img_tocompare = cv2.imread("D:/data/image_data/Landscapes/00000363_(6).jpg")
+#img = cv2.imread("D:/data/image_data/Landscapes/00000362_(6).jpg")#"D:\data\image_data\Landscapes\00000021_(6).jpg"
+#img_tocompare = cv2.imread("D:/data/image_data/Landscapes/00000363_(6).jpg")
+img = cv2.imread("C:/Users/marko/Documents/viertes_semester/BigData/Image_recommender_Big_Data/src/images/000000000024.jpg")
 
 bits_list, hashed_frame = generate_hash(img)
-bits_list2, hashed_frame2 = generate_hash(img_tocompare)
+#bits_list2, hashed_frame2 = generate_hash(img_tocompare)
 
-print(hamming(bits_list, bits_list2))
+#print(hamming(bits_list, bits_list2))
 #print(bits_list)
 
 print(bits_list)
 
+
+#measuring time
+end = time.time()
+print(f" runtime: {end - start}")
+"""
 fig, (ax1, ax2) = plt.subplots(1, 2)  # 1 row, 2 columns
 
 # Display the first image in the first subplot
@@ -75,7 +98,7 @@ ax2.imshow(hashed_frame2)
 ax2.axis('off')  # Optional: turns off the axis
 
 # Show the plot
-plt.show()
+plt.show()"""
 """
 plt.imshow(hashed_frame)
 plt.imshow(hashed_frame2)"""
