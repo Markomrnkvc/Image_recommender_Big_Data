@@ -38,7 +38,7 @@ def create_csv(args, csv_path):
     if not os.path.exists(csv_path):
         with open(csv_path, 'w', newline='') as file:
             writer = csv.writer(file)
-            writer.writerow(["ID", "Name", "Height", "Width", "Channels", "Avg Blue", "Avg Red", "Avg Green"])
+            writer.writerow(["ID", "Name"])
             
 def image_generator(args):
     

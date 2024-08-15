@@ -58,7 +58,7 @@ def dataflow(args):
                 
                 
                 #saving data in pickle file
-                embedding = random.randint(0,1000) #need placeholder, no embeddings yet
+                embedding = random.randint(0,1000) #need placeholder, no embeddings yet #####################
                 
                 save_in_df(embedding, image_id, h, w, c, avg_color, df)
                 
