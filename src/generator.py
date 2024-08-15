@@ -13,10 +13,8 @@ und durch folder iterieren kann"""
 import os
 from os.path import join, exists, isfile
 from pathlib import Path 
-import numpy 
-import cv2 
+import cv2
 import argparse 
-import numpy 
 import csv 
 from tqdm import tqdm
 import numpy as np
@@ -32,25 +30,19 @@ csv_path = join(current_path, csv_file)
 error_path = join(current_path, error_file)
 
 def create_csv(args, csv_path):
-    # Check whether the CSV 
-    # exists or not if not then create one. 
+    # Check whether the CSV exists or not if not then create one. 
 
-    
     #creating csv if not existing
     if os.path.exists(csv_path) == False: 
-    	with open(csv_path, 'w', newline = '') as file: 
-    		writer = csv.writer(file) 
-    		
-    		writer.writerow(["ID", "Name", "Height", 
-    						"Width", "Channels", 
-    						"Avg Blue", "Avg Red", 
-    						"Avg Green", "RGB_Histogram", "Perceptual_Hash"]) 
+    	with open(csv_path, 'w', newline = '') as file:
+            writer = csv.writer(file)
+            writer.writerow(["ID", "Name", "RGB_Histogram", "Perceptual_Hash", "ResNet_Embedding"])
+    
     #creating csv if not existing
-    if os.path.exists(error_path) == False: 
-    	with open(error_path, 'w', newline = '') as file: 
-    		writer = csv.writer(file) 
-    		
-    		writer.writerow(["Name"]) 
+    if os.path.exists(error_path) == False:
+        with open(error_path, 'w', newline = '') as file:
+              writer = csv.writer(file)
+              writer.writerow(["Name"])
             
 def image_generator(args):
     
@@ -109,38 +101,10 @@ def image_generator(args):
                     current_ID += 1
                     #print(current_ID)
 
-                
-def get_data(args, img, image_path, image_id, csv_path):
-    
-    
-        
-    # Program to find the 
-    # colors and embed in the CSV 
-    #mypath, image_id = image_generator(args)
-    image_path = str(image_path)
-    #print(f"path:{image_path}")
-    #print(type(image_path))
-    batch_size = args.batch_size
-    batch_size = int(batch_size)
-    
-    #loading the image
-    #img = cv2.imread(image_path) 
-    #print(img)
-    h,w,c = img.shape
-    
-       
-    avg_color_per_row = numpy.average(img, axis = 0) 
-    avg_color = numpy.average(avg_color_per_row, axis = 0) 
-    #img_name = os.path.basename(image_path) #only img name, without whole path
-   	
-    return image_id, image_path, h, w, c, avg_color
 
-
-def data_writer(image_id, image_path, h, w, c, avg_color, histogram, phash_vector, csv_path):
+def data_writer(image_id, image_path, histogram, phash_vector, resnet_embedding, csv_path):
 
     with open(csv_path, 'a', newline = '') as file: 
            writer = csv.writer(file) 
-           writer.writerow([image_id, image_path, h, w, c, 
-                           avg_color[0], avg_color[1], 
-                           avg_color[2], histogram, phash_vector]) 
+           writer.writerow([image_id, image_path, histogram, phash_vector, resnet_embedding]) 
     file.close()

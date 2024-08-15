@@ -4,19 +4,16 @@ Created on Thu Jun 27 02:36:11 2024
 
 @author: marko
 """
-from generator import create_csv, image_generator, get_data, data_writer
+from generator import create_csv, image_generator, data_writer
 from dataframe import create_pk, save_in_df
-import generator
 from histograms import hist
 from phashes import perceptual_hashes
+from Resnet_Extraction import ResNet_Feature_Extractor
 
 
 import os
 from os.path import join, isfile
 from pathlib import Path 
-import numpy 
-import cv2 
-import argparse 
 import numpy 
 import csv 
 from tqdm import tqdm
@@ -57,26 +54,25 @@ def dataflow(args):
         
     
         #for img ,image_path, image_id in tqdm(image_generator(args), total=444880):
-        for img ,image_path, image_id in image_generator(args):
+        for img, image_path, image_id in image_generator(args):
             #print(image_id)
             #getting data out of images
             try:
-                image_id, image_path, h, w, c, avg_color = get_data(args, img, image_path, image_id, csv_path)
-                
                 #calculating histogram of the image
                 histogram = hist(img)
                 
                 #calculating perceptual hashes
                 phash_vector = perceptual_hashes(img)
+
+                #calculating vectors from resnet
+                resnet_embedding = ResNet_Feature_Extractor.extract_features(img)
                 
                 #writing data into csv
-                data_writer(image_id, image_path, h, w, c, avg_color, histogram, phash_vector, csv_path)
+                data_writer(image_id, image_path, histogram, phash_vector, resnet_embedding, csv_path)
                 
                 
-                #saving data in pickle file
-                embedding = random.randint(0,1000) #need placeholder, no embeddings yet #####################
-                
-                save_in_df(embedding, image_id, h, w, c, avg_color, histogram, phash_vector, df)
+                #saving data in pickle file                
+                save_in_df(image_id, histogram, phash_vector, resnet_embedding, df)
                 
                 #closing pickle after 50 images to save progress
                 if image_id % 50 == 0:
@@ -89,9 +85,9 @@ def dataflow(args):
                 print(f"\nError loading image {image_path}")
                 
                 with open(error_path, 'a', newline = '') as file: 
-               		writer = csv.writer(file) 
-               		writer.writerow([image_path]) 
-                file.close() 
+                    writer = csv.writer(file) 
+                    writer.writerow([image_path]) 
+                file.close()
                
                 
             #print("\nimage data loaded into csv") 

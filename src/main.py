@@ -5,30 +5,35 @@ Created on Tue Jun  4 02:57:50 2024
 @author: marko
 """
 from dataflow import dataflow
-
+from Recommender import Recommender
 import argparse
-
-
-# NOTE: This is the main file, you propably don't need to change anything here
 
 # Setup an argument parser for control via command line
 parser = argparse.ArgumentParser(
     prog="Big Data image recomender",
-    description="A project for recommending images based on similarities",
+    description="Set mode to either 'generator' or 'recommender'. If 'recommender', specify the method.",
     epilog="Students project",
 )
 
-#parser.add_argument("mode", choices=["generator", "recomender"])
-parser.add_argument("-f", "--folder", help="Path to folder containing the images")
-parser.add_argument("-b", "--batch_size", action="store", default=500, help="Batch size for processing images")
-
-# Parse the arguments from the command line
+parser.add_argument("-f", "--folder", help="Path to SSD-folder containing the images")
+parser.add_argument("mode", choices=["generator", "recommender"], help="Choose the mode: 'generator' to generate features, or 'recommender' for recommendations.")
+    
+#if 'mode' is 'recommender':
+parser.add_argument("--method", choices=["resnet", "phashes", "histograms"], help="Choose the method for recommendations: 'resnet', 'phashes', or 'histograms'.", required=False)
+    
 args = parser.parse_args()
 
-# Switch control flow based on arguments
-#if args.mode == "generator":
+if args.mode == "recommender" and args.method is None:
+    parser.error("The 'recommender' mode requires the '--method' argument to be specified.")
 
-dataflow(args)
+if args.mode == "generator":
+    print("generating features for the dataset...")
+    dataflow(args)
+elif args.mode == "recommender":
+    print(f"Recommending using method: {args.method}")
+    Recommender.recommend(args.method)
+
+
 
 
 """TO DO:
