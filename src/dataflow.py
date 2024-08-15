@@ -7,6 +7,8 @@ Created on Thu Jun 27 02:36:11 2024
 from generator import create_csv, image_generator, get_data, data_writer
 from dataframe import create_pk, save_in_df
 import generator
+from histograms import hist
+from phashes import perceptual_hashes
 
 
 import os
@@ -20,6 +22,7 @@ import csv
 from tqdm import tqdm
 import random
 import pandas as pd
+
 #ID for each image, refered to in csv-file
 #image_id = 0
 
@@ -52,21 +55,28 @@ def dataflow(args):
         #opening pickle
         df = pd.read_pickle(pk_path)
         
-
+    
         #for img ,image_path, image_id in tqdm(image_generator(args), total=444880):
         for img ,image_path, image_id in image_generator(args):
             #print(image_id)
             #getting data out of images
             try:
                 image_id, image_path, h, w, c, avg_color = get_data(args, img, image_path, image_id, csv_path)
+                
+                #calculating histogram of the image
+                histogram = hist(img)
+                
+                #calculating perceptual hashes
+                phash_vector = perceptual_hashes(img)
+                
                 #writing data into csv
-                data_writer(image_id, image_path, h, w, c, avg_color, csv_path)
+                data_writer(image_id, image_path, h, w, c, avg_color, histogram, phash_vector, csv_path)
                 
                 
                 #saving data in pickle file
                 embedding = random.randint(0,1000) #need placeholder, no embeddings yet #####################
                 
-                save_in_df(embedding, image_id, h, w, c, avg_color, df)
+                save_in_df(embedding, image_id, h, w, c, avg_color, histogram, phash_vector, df)
                 
                 #closing pickle after 50 images to save progress
                 if image_id % 50 == 0:
@@ -82,10 +92,10 @@ def dataflow(args):
                		writer = csv.writer(file) 
                		writer.writerow([image_path]) 
                 file.close() 
-           
+               
                 
             #print("\nimage data loaded into csv") 
-        print(f"number currently loaded images: {image_id}, {image_path}")
+        print(f"number of currently loaded images: {image_id}, {image_path}")
         #closing pickle at end of generator to save
         df.to_pickle(pk_path)
 
