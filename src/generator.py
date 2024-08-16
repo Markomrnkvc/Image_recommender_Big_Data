@@ -44,7 +44,7 @@ def create_csv(args, csv_path):
     		writer.writerow(["ID", "Name", "Height", 
     						"Width", "Channels", 
     						"Avg Blue", "Avg Red", 
-    						"Avg Green", "RGB_Histogram"]) 
+    						"Avg Green", "RGB_Histogram", "Perceptual_Hash"]) 
     #creating csv if not existing
     if os.path.exists(error_path) == False: 
     	with open(error_path, 'w', newline = '') as file: 
@@ -81,7 +81,7 @@ def image_generator(args):
     # generator that runs image files from our given directory as the parameter
     for root, _, files in os.walk(path):
         
-        for file in tqdm(files, total=444880-current_ID):
+        for file in tqdm(files, total=444880, initial=current_ID):
         #for file in files:
             if file.lower().endswith(('png', 'jpg', 'jpeg')):
                 image_path = os.path.join(root, file)
@@ -89,8 +89,10 @@ def image_generator(args):
                 if gen_uptodate == False: #generator still yielding old images
                 #checking if image is already in database
                     if image_path not in list_img and image_path not in error_list_img:
-                        gen_uptodate = True #set to True if one image has not been added to csv yet
-                        #print(f"gen_uptodate: {gen_uptodate}")
+                        #set to True if one image has not been added to csv yet
+                        gen_uptodate = True 
+                        
+                        print(f"\ngen_uptodate set to {gen_uptodate}\n")
                         
                 if gen_uptodate == True: #if one is new, all folowing will be new too 
                     #print("new image loaded into csv")
@@ -134,11 +136,11 @@ def get_data(args, img, image_path, image_id, csv_path):
     return image_id, image_path, h, w, c, avg_color
 
 
-def data_writer(image_id, image_path, h, w, c, avg_color, histogram, csv_path):
+def data_writer(image_id, image_path, h, w, c, avg_color, histogram, phash_vector, csv_path):
 
     with open(csv_path, 'a', newline = '') as file: 
            writer = csv.writer(file) 
            writer.writerow([image_id, image_path, h, w, c, 
                            avg_color[0], avg_color[1], 
-                           avg_color[2], histogram]) 
+                           avg_color[2], histogram, phash_vector]) 
     file.close()
