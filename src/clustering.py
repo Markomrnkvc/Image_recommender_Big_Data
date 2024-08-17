@@ -42,11 +42,15 @@ def fit_cluster(n_clusters = 10):
     print("Clustering the collected data")
     
     #loading pickle file with data
-    file = "C:/Users/marko/Documents/viertes_semester/BigData/Image_recommender_Big_Data/src/pickle/data.pk"
+    file = "C:/Users/marko/Documents/viertes_semester/BigData/Image_recommender_Big_Data/src/pickle/data.pkl"
        
     data = pd.read_pickle(file)
-     
+    """
+    with open(file, 'rb') as file:
+        data = pickle.load(file)
     
+    data = pd.DataFrame(data)
+    """
     """
     #entfernen der für kmeans unnötigen Featuren
     cols_to_remove_hash = ['Image_ID', 'Embeddings', 'Height', 'Width', 'Channels',

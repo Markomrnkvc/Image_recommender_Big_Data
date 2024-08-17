@@ -34,7 +34,7 @@ csv_file = "csv\images.csv" #"C:/Users/marko/OneDrive/Documents/viertes_Semester
 error_file = "csv\error_images.csv"
 
 #path to pickle file
-pk_file = "pickle/data.pk"
+pk_file = "pickle/data.pkl"
 
 csv_path = join(current_path, csv_file)
 error_path = join(current_path, error_file)
@@ -46,6 +46,10 @@ def dataflow(args):
     create_csv(args, csv_path)
     create_pk(pk_path)
     
+    if os.path.getsize(pk_path) > 0:
+        df = pd.read_pickle(pk_path)
+    else:
+        print("file not found")
     try:
         gen = next(image_generator(args))
         if gen == None:
@@ -53,7 +57,7 @@ def dataflow(args):
                 return
         
         #opening pickle
-        df = pd.read_pickle(pk_path)
+        
         
     
         #for img ,image_path, image_id in tqdm(image_generator(args), total=444880):
@@ -70,16 +74,15 @@ def dataflow(args):
                 phash_vector = perceptual_hashes(img)
                 
                 #writing data into csv
-                data_writer(image_id, image_path, h, w, c, avg_color, histogram, phash_vector, csv_path)
+                data_writer(image_id, image_path, csv_path)# h, w, c, avg_color, histogram, phash_vector,
                 
                 
                 embedding = random.randint(0,1000) #need placeholder, no embeddings yet
                 
                 #saving data in pickle file
-                save_in_df(embedding, image_id, h, w, c, avg_color, histogram, phash_vector, df)
-                
+                save_in_df(embedding, image_id, histogram, phash_vector, df)# h, w, c, avg_color, 
                 #closing pickle after 50 images to save progress
-                if image_id % 100 == 0:
+                if image_id % 1000 == 0:
                     #closing pickle to save
                     df.to_pickle(pk_path)
                     #opening pickle
