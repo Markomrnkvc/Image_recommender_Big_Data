@@ -7,12 +7,12 @@ import matplotlib.pyplot as plt
 from tkinter import filedialog
 from os.path import join
 
-from Resnet_Extraction import ResNet_Feature_Extractor
+from resnet_extraction import ResNet_Feature_Extractor
 from phashes import perceptual_hashes
 from histograms import hist
 from scipy.spatial.distance import euclidean, hamming
 
-
+# ------- data_clustered.pk
 class Recommender:
 
     def __init__ (self, methods):
@@ -77,7 +77,7 @@ class Recommender:
     
     def find_nearest_neighbors(self, uploaded_feature, dataset, method, k=5):
         distances = []
-        method_column = f"{method}"  # METHOD HAS TO BE SAME NAME AS COLS
+        method_column = f"{method}"  # #### 'Embeddings', 'RGB_Histogram', 'Perceptual_Hash' //METHOD HAS TO BE SAME NAME AS COLS
 
         uploaded_feature = np.ravel(uploaded_feature) # Convert uploaded_feature to a 1D array
 

@@ -8,7 +8,7 @@ from generator import create_csv, image_generator, data_writer
 from dataframe import create_pk, save_in_df
 from histograms import hist
 from phashes import perceptual_hashes
-from Resnet_Extraction import ResNet_Feature_Extractor
+from resnet_extraction import ResNet_Feature_Extractor
 
 
 import os
@@ -64,8 +64,6 @@ def dataflow(args):
             #print(image_id)
             #getting data out of images
             try:
-                image_id, image_path, h, w, c, avg_color = get_data(args, img, image_path, image_id, csv_path)
-                
                 #calculating histogram of the image
                 histogram = hist(img)
                 
@@ -73,10 +71,8 @@ def dataflow(args):
                 phash_vector = perceptual_hashes(img)
                 
                 #writing data into csv
-                data_writer(image_id, image_path, h, w, c, avg_color, histogram, phash_vector, csv_path)
+                data_writer(image_id, image_path, histogram, phash_vector, csv_path)
                 
-                
-                #saving data in pickle file
                 extractor = ResNet_Feature_Extractor(model_weights="imagenet")
                 resnet_embedding = extractor.extract_features(img)
                 
@@ -101,7 +97,7 @@ def dataflow(args):
             #print("\nimage data loaded into csv") 
         print(f"number of currently loaded images: {image_id}, {image_path}")
         #closing pickle at end of generator to save
-        df.to_pickle(pk_path)
+        #df.to_pickle(pk_path)
 
     except:
         StopIteration
