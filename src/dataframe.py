@@ -13,7 +13,7 @@ def create_pk(pk_path):
     
     if os.path.exists(pk_path) == False:
         #naming columns
-        cols = cols = ['Image_ID', 'Embeddings', 'RGB_Histogram', 'Perceptual_Hash']# 'Height', 'Width', 'Channels', 'Avg Blue', 'Avg Red', 'Avg Green',
+        cols = ['Image_ID', 'Embeddings', 'RGB_Histogram', 'Perceptual_Hash']# 'Height', 'Width', 'Channels', 'Avg Blue', 'Avg Red', 'Avg Green',
         #creating DataFrame
         df = pd.DataFrame(columns=cols)
         #saving to pickle

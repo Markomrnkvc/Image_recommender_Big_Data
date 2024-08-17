@@ -67,15 +67,14 @@ def dataflow(args):
             try:
                 image_id, image_path, h, w, c, avg_color = get_data(args, img, image_path, image_id, csv_path)
                 
+                #writing data into csv
+                data_writer(image_id, image_path, csv_path)# h, w, c, avg_color, histogram, phash_vector,
+                
                 #calculating histogram of the image
                 histogram = hist(img)
                 
                 #calculating perceptual hashes
                 phash_vector = perceptual_hashes(img)
-                
-                #writing data into csv
-                data_writer(image_id, image_path, csv_path)# h, w, c, avg_color, histogram, phash_vector,
-                
                 
                 embedding = random.randint(0,1000) #need placeholder, no embeddings yet
                 

@@ -11,7 +11,8 @@ wählen kmeans, da so alle Bilde reinem cluster zugeordnet werden,
 from histograms import hist
 from phashes import perceptual_hashes
 import cv2
- 
+import os
+from os.path import join
 import argparse
 import pickle
 import pandas as pd
@@ -41,9 +42,15 @@ def fit_cluster(n_clusters = 10):
     '''
     print("Clustering the collected data")
     
+    #getting pickle file 
+    current_path = os.getcwd()
+    #path to pickle file
+    pk_file = "pickle/data.pkl"
+    pk_path = join(current_path, pk_file)
     #loading pickle file with data
-    file = "C:/Users/marko/Documents/viertes_semester/BigData/Image_recommender_Big_Data/src/pickle/data.pkl"
-       
+    file = pk_path#"C:/Users/marko/Documents/viertes_semester/BigData/Image_recommender_Big_Data/src/pickle/data.pkl"
+    
+    #loading pickle file
     data = pd.read_pickle(file)
     """
     with open(file, 'rb') as file:
