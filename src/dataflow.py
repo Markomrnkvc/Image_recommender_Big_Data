@@ -46,6 +46,8 @@ def dataflow(args):
     create_csv(args, csv_path)
     create_pk(pk_path)
     
+    
+    #checking if pickle exists, if true; opening pickle
     if os.path.getsize(pk_path) > 0:
         df = pd.read_pickle(pk_path)
     else:
@@ -55,9 +57,6 @@ def dataflow(args):
         if gen == None:
                 print("\nNo new images")
                 return
-        
-        #opening pickle
-        
         
     
         #for img ,image_path, image_id in tqdm(image_generator(args), total=444880):
