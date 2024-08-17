@@ -5,17 +5,18 @@ Created on Tue Jun  4 02:57:50 2024
 @author: marko
 """
 from dataflow import dataflow
+from Recommender import Recommender
 from clustering import fit_cluster, predict_cluster
-
 import argparse
+import os
+from Resnet_Extraction import ResNet_Feature_Extractor
 
-
-# NOTE: This is the main file, you propably don't need to change anything here
+os.environ["CUDA_VISIBLE_DEVICES"] = "-1"
 
 # Setup an argument parser for control via command line
 parser = argparse.ArgumentParser(
     prog="Big Data image recomender",
-    description="A project for recommending images based on similarities",
+    description="Set mode to either 'generator' or 'recommender'. If 'recommender', specify the method.",
     epilog="Students project",
 )
 
@@ -31,19 +32,24 @@ parser.add_argument("-b", "--batch_size", action="store", default=500, help="Bat
 
 
 
-# Parse the arguments from the command line
+#if 'mode' is 'recommender':
+parser.add_argument('--method', nargs='+', choices=['resnet_embedding', 'phash_vector', 'histogram'], required=True, help='Specify one or more methods')
+
 args = parser.parse_args()
 
 # Switch control flow based on arguments
 
 if args.mode == "generate":
-
+    print("generating features for the dataset...")
     dataflow(args)
     
 elif args.mode == "cluster":
     fit_cluster(n_clusters=10)
     
 elif args.mode == "recommender" and args.method != None:
+
+    recommender = Recommender(methods=args.method)
+    recommender.recommend()
     import random
     from histograms import hist
     from phashes import perceptual_hashes
@@ -57,7 +63,8 @@ elif args.mode == "recommender" and args.method != None:
 
     histogram = hist(img)
 
-    embedding = random.randint(0,1000)
+    extractor = ResNet_Feature_Extractor(model_weights="imagenet")
+    resnet_embedding = extractor.extract_features(img)
 
     phash_vector = perceptual_hashes(img)
     
@@ -68,6 +75,3 @@ elif args.mode == "recommender" and args.method != None:
     elif args.method == "hashes":
         print(predict_cluster(img, image_path, args, data = phash_vector))
     
-
-#if args.mode == "cluster":#
- #   kmeans.py

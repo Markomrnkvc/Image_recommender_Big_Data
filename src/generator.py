@@ -13,10 +13,8 @@ und durch folder iterieren kann"""
 import os
 from os.path import join, exists, isfile
 from pathlib import Path 
-import numpy 
-import cv2 
+import cv2
 import argparse 
-import numpy 
 import csv 
 from tqdm import tqdm
 import numpy as np
@@ -25,125 +23,77 @@ import numpy as np
 image_id = 0
 
 #path to csv-file
-csv_file = "csv\images.csv" #"C:/Users/marko/OneDrive/Documents/viertes_Semester/Big_Data/Image_recommender_Big_Data/src/csv/images.csv"
-error_file = "csv\error_images.csv"
+csv_file = "csv/images.csv" #"C:/Users/marko/OneDrive/Documents/viertes_Semester/Big_Data/Image_recommender_Big_Data/src/csv/images.csv"
+error_file = "csv/error_images.csv"
 current_path = os.getcwd()
 csv_path = join(current_path, csv_file)
 error_path = join(current_path, error_file)
 
 def create_csv(args, csv_path):
-    # Check whether the CSV 
-    # exists or not if not then create one. 
+    # Check whether the CSV exists or not if not then create one. 
 
-    
     #creating csv if not existing
     if os.path.exists(csv_path) == False: 
-    	with open(csv_path, 'w', newline = '') as file: 
-    		writer = csv.writer(file) 
-    		
-    		writer.writerow(["ID", "Name"]) 
-            #, "Height", 
-    						#"Width", "Channels", 
-    						#"Avg Blue", "Avg Red", 
-    						#"Avg Green", "RGB_Histogram", "Perceptual_Hash"
-
-    #creating csv if not existing
-    if os.path.exists(error_path) == False: 
-    	with open(error_path, 'w', newline = '') as file: 
-    		writer = csv.writer(file) 
-    		
-    		writer.writerow(["Name"]) 
-            
-def image_generator(args):
+    	with open(csv_path, 'w', newline = '') as file:
+            writer = csv.writer(file)
+            writer.writerow(["Image_ID", "Name"])
     
-    path = Path(args.folder)
+    #creating csv if not existing
+    if os.path.exists(error_path) == False:
+        with open(error_path, 'w', newline = '') as file:
+              writer = csv.writer(file)
+              writer.writerow(["Name"])
+            
 
-    #creating a list with all paths already loaded into csv
+def image_generator(args):
+    path = Path(args.folder)
     list_img = []
     error_list_img = []
     current_ID = -1
-    #C:\Users\marko\Documents\viertes_semester\BigData\Image_recommender_Big_Data\src\csv
-    #C:/Users/marko/Documents/viertes_Semester/Big_Data/Image_recommender_Big_Data/src/
-    with open(csv_path, mode ='r')as file:
-      csvFile = csv.reader(file)
-      
-      for lines in csvFile:
-          list_img.append(lines[1])
-          current_ID += 1
     
+    with open(csv_path, mode='r') as file:
+        csvFile = csv.reader(file)
+        for lines in csvFile:
+            list_img.append(lines[1])
+            current_ID += 1
     
-    with open('csv/error_images.csv', mode ='r')as file:
-      csvFile = csv.reader(file)
-      
-      for lines in csvFile:
-          error_list_img.append(lines[0])
-              
-    gen_uptodate = False #variable we use to check if the generator is yielding new images or old ones
+    with open('csv/error_images.csv', mode='r') as file:
+        csvFile = csv.reader(file)
+        for lines in csvFile:
+            error_list_img.append(lines[0])
     
-    # generator that runs image files from our given directory as the parameter
-    for root, _, files in os.walk(path):
+    for img_path in path.rglob('*.*'):
+        print(f"Überprüfe Bild: {img_path}")
+        if str(img_path) in list_img:
+            print(f"{img_path} bereits verarbeitet, wird übersprungen.")
+            continue
+        if str(img_path) in error_list_img:
+            print(f"{img_path} ist in der Fehlerliste, wird übersprungen.")
+            continue
         
-        for file in tqdm(files, total=444880, initial=current_ID):
-        #for file in files:
-            if file.lower().endswith(('png', 'jpg', 'jpeg')):
-                image_path = os.path.join(root, file)
-                
-                if gen_uptodate == False: #generator still yielding old images
-                #checking if image is already in database
-                    if image_path not in list_img and image_path not in error_list_img:
-                        #set to True if one image has not been added to csv yet
-                        gen_uptodate = True 
-                        
-                        print(f"\ngen_uptodate set to {gen_uptodate}\n")
-                        
-                if gen_uptodate == True: #if one is new, all folowing will be new too 
-                    #print("new image loaded into csv")
-                    #loading the image
-                    img = cv2.imread(image_path) 
-                    
-                    
-                    #print(image_path)
-                    #print(current_ID)
-                    image_id = current_ID
-                    #print(img)
-                    yield img, image_path, image_id
-                    #setting ID counter up
-                    current_ID += 1
-                    #print(current_ID)
+        try:
+            img = cv2.imread(str(img_path))
+            if img is None:
+                print(f"Bild konnte nicht geladen werden: {img_path}")
+                with open(error_path, 'a', newline='') as file:
+                    writer = csv.writer(file)
+                    writer.writerow([str(img_path)])
+                continue
+            
+            current_ID += 1
+            yield img, str(img_path), current_ID
+            print(f"Bild verarbeitet: {img_path} mit ID {current_ID}")
 
-                
-def get_data(args, img, image_path, image_id, csv_path):
-    
-    
-        
-    # Program to find the 
-    # colors and embed in the CSV 
-    #mypath, image_id = image_generator(args)
-    image_path = str(image_path)
-    #print(f"path:{image_path}")
-    #print(type(image_path))
-    batch_size = args.batch_size
-    batch_size = int(batch_size)
-    
-    #loading the image
-    #img = cv2.imread(image_path) 
-    #print(img)
-    h,w,c = img.shape
-    
-       
-    avg_color_per_row = numpy.average(img, axis = 0) 
-    avg_color = numpy.average(avg_color_per_row, axis = 0) 
-    #img_name = os.path.basename(image_path) #only img name, without whole path
-   	
-    return image_id, image_path, h, w, c, avg_color
+        except Exception as e:
+            print(f"Fehler beim Verarbeiten von {img_path}: {e}")
+            with open(error_path, 'a', newline='') as file:
+                writer = csv.writer(file)
+                writer.writerow([str(img_path)])
 
 
-def data_writer(image_id, image_path, csv_path): #, h, w, c, avg_color, histogram, phash_vector
+def data_writer(image_id, image_path, csv_path):
 
     with open(csv_path, 'a', newline = '') as file: 
            writer = csv.writer(file) 
            writer.writerow([image_id, image_path]) 
-           #, h, w, c, 
-                           #avg_color[0], avg_color[1], 
-                           #avg_color[2], histogram, phash_vector
     file.close()
