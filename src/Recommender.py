@@ -113,7 +113,7 @@ class Recommender:
     def chi_square_distance(self, histA, histB, eps=1e-10):
         return 0.5 * np.sum(((histA - histB) ** 2) / (histA + histB + eps))
 
-    def show_results(self, combined_results):
+    def show_results_not(self, combined_results):
         if not combined_results:
             print("No neighbors found.")
             return
@@ -139,6 +139,35 @@ class Recommender:
                 img_idx += 1
 
         plt.show()
+
+    def show_results(self, combined_results):
+        if not combined_results:
+            print("No neighbors found.")
+            return
+
+        # total number of images that need to be displayed:
+        total_images = sum(len(top_images) for _, (_, top_images) in combined_results)
+
+        cols = 5  # bc 5 recommended images are demanded
+        rows = (total_images + cols - 1) // cols
+        plt.figure(figsize=(15, 5 * rows))
+        plt.suptitle("We thought you might also like the following:", fontsize=16)
+
+        img_idx = 1
+
+        for method, (top_k, top_images) in combined_results:
+            for i, (dist, img) in enumerate(zip(top_k, top_images)):
+                ax = plt.subplot(rows, cols, img_idx)
+                plt.imshow(cv2.cvtColor(img, cv2.COLOR_BGR2RGB))  # vonvert BGR to RGB
+                ax.set_title(f"{method}: Dist: {dist[0]:.2f}", fontsize=10)
+                plt.axis('off')
+                img_idx += 1
+
+        #plt.tight_layout(h_pad=0.2, w_pad=0.3)  # reduce the space between rows (vertically)
+        #plt.subplots_adjust(hspace=0.1)  # decreases space between rows
+        plt.show()
+
+
 
 
 #recommender = Recommender(method="resnet_embedding")
