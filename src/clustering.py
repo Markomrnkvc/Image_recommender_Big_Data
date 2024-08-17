@@ -52,28 +52,8 @@ def fit_cluster(n_clusters = 10):
     
     #loading pickle file
     data = pd.read_pickle(file)
-    """
-    with open(file, 'rb') as file:
-        data = pickle.load(file)
-    
-    data = pd.DataFrame(data)
-    """
-    """
-    #entfernen der für kmeans unnötigen Featuren
-    cols_to_remove_hash = ['Image_ID', 'Embeddings', 'Height', 'Width', 'Channels',
-                      'Avg Blue', 'Avg Red', 'Avg Green', 'RGB_Histogram']
-    
-    cols_to_remove_rgb = [ 'Embeddings', 'Height', 'Width', 'Channels',
-                      'Avg Blue', 'Avg Red', 'Avg Green', 'Perceptual_Hash']
-    
-    cols_to_remove_emb = [ 'Image_ID', 'Height', 'Width', 'Channels',
-                      'Avg Blue', 'Avg Red', 'Avg Green', 'RGB_Histogram', 'Perceptual_Hash']
-    """
-    #data_kmeans_hash = data.drop(cols_to_remove_hash, axis = 1)
     
     #getting data for histograms clustering
-    #histo_data = data.drop(cols_to_remove_rgb, axis = 1)
-    #print(histo_data.iloc[0]['RGB_Histogram'])
     histograms_col = pd.DataFrame(data['RGB_Histogram'].tolist())
     
     
@@ -155,22 +135,6 @@ def fit_cluster(n_clusters = 10):
 
 
 
-"""
-einladen eines bildes noch drin gelassen, sollten wir später rausnehmen
-"""
-"""
-image_path = "C:/Users/marko/Documents/viertes_semester/BigData/Image_recommender_Big_Data/src/images/000000000024.jpg"
-
-img = cv2.imread(image_path)
-#modelfile = "C:/Users/marko/Documents/viertes_semester/BigData/Image_recommender_Big_Data/src/pickle/kmeans_model.pkl"
-#img = cv2.imread(image_path) 
-
-histogram = hist(img)
-
-embedding = "a"
-
-phash_vector = perceptual_hashes(img)
-"""
 def predict_cluster(img, img_path, args, data):#, histogram, embedding, phash):
     '''
     Returns the cluster (int) the uploaded image belongs to
