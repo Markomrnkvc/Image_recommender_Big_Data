@@ -23,8 +23,8 @@ import numpy as np
 image_id = 0
 
 #path to csv-file
-csv_file = "csv\images.csv" #"C:/Users/marko/OneDrive/Documents/viertes_Semester/Big_Data/Image_recommender_Big_Data/src/csv/images.csv"
-error_file = "csv\error_images.csv"
+csv_file = "csv/images.csv" #"C:/Users/marko/OneDrive/Documents/viertes_Semester/Big_Data/Image_recommender_Big_Data/src/csv/images.csv"
+error_file = "csv/error_images.csv"
 current_path = os.getcwd()
 csv_path = join(current_path, csv_file)
 error_path = join(current_path, error_file)
@@ -36,7 +36,7 @@ def create_csv(args, csv_path):
     if os.path.exists(csv_path) == False: 
     	with open(csv_path, 'w', newline = '') as file:
             writer = csv.writer(file)
-            writer.writerow(["ID", "Name", "RGB_Histogram", "Perceptual_Hash", "ResNet_Embedding"])
+            writer.writerow(["Image_ID", "Name"])
     
     #creating csv if not existing
     if os.path.exists(error_path) == False:
@@ -44,67 +44,56 @@ def create_csv(args, csv_path):
               writer = csv.writer(file)
               writer.writerow(["Name"])
             
-def image_generator(args):
-    
-    path = Path(args.folder)
 
-    #creating a list with all paths already loaded into csv
+def image_generator(args):
+    path = Path(args.folder)
     list_img = []
     error_list_img = []
     current_ID = -1
-    #C:\Users\marko\Documents\viertes_semester\BigData\Image_recommender_Big_Data\src\csv
-    #C:/Users/marko/Documents/viertes_Semester/Big_Data/Image_recommender_Big_Data/src/
-    with open(csv_path, mode ='r')as file:
-      csvFile = csv.reader(file)
-      
-      for lines in csvFile:
-          list_img.append(lines[1])
-          current_ID += 1
     
+    with open(csv_path, mode='r') as file:
+        csvFile = csv.reader(file)
+        for lines in csvFile:
+            list_img.append(lines[1])
+            current_ID += 1
     
-    with open('csv/error_images.csv', mode ='r')as file:
-      csvFile = csv.reader(file)
-      
-      for lines in csvFile:
-          error_list_img.append(lines[0])
-              
-    gen_uptodate = False #variable we use to check if the generator is yielding new images or old ones
+    with open('csv/error_images.csv', mode='r') as file:
+        csvFile = csv.reader(file)
+        for lines in csvFile:
+            error_list_img.append(lines[0])
     
-    # generator that runs image files from our given directory as the parameter
-    for root, _, files in os.walk(path):
+    for img_path in path.rglob('*.*'):
+        print(f"Überprüfe Bild: {img_path}")
+        if str(img_path) in list_img:
+            print(f"{img_path} bereits verarbeitet, wird übersprungen.")
+            continue
+        if str(img_path) in error_list_img:
+            print(f"{img_path} ist in der Fehlerliste, wird übersprungen.")
+            continue
         
-        for file in tqdm(files, total=444880, initial=current_ID):
-        #for file in files:
-            if file.lower().endswith(('png', 'jpg', 'jpeg')):
-                image_path = os.path.join(root, file)
-                
-                if gen_uptodate == False: #generator still yielding old images
-                #checking if image is already in database
-                    if image_path not in list_img and image_path not in error_list_img:
-                        #set to True if one image has not been added to csv yet
-                        gen_uptodate = True 
-                        
-                        print(f"\ngen_uptodate set to {gen_uptodate}\n")
-                        
-                if gen_uptodate == True: #if one is new, all folowing will be new too 
-                    #print("new image loaded into csv")
-                    #loading the image
-                    img = cv2.imread(image_path) 
-                    
-                    
-                    #print(image_path)
-                    #print(current_ID)
-                    image_id = current_ID
-                    #print(img)
-                    yield img, image_path, image_id
-                    #setting ID counter up
-                    current_ID += 1
-                    #print(current_ID)
+        try:
+            img = cv2.imread(str(img_path))
+            if img is None:
+                print(f"Bild konnte nicht geladen werden: {img_path}")
+                with open(error_path, 'a', newline='') as file:
+                    writer = csv.writer(file)
+                    writer.writerow([str(img_path)])
+                continue
+            
+            current_ID += 1
+            yield img, str(img_path), current_ID
+            print(f"Bild verarbeitet: {img_path} mit ID {current_ID}")
+
+        except Exception as e:
+            print(f"Fehler beim Verarbeiten von {img_path}: {e}")
+            with open(error_path, 'a', newline='') as file:
+                writer = csv.writer(file)
+                writer.writerow([str(img_path)])
 
 
-def data_writer(image_id, image_path, histogram, phash_vector, resnet_embedding, csv_path):
+def data_writer(image_id, image_path, csv_path):
 
     with open(csv_path, 'a', newline = '') as file: 
            writer = csv.writer(file) 
-           writer.writerow([image_id, image_path, histogram, phash_vector, resnet_embedding]) 
+           writer.writerow([image_id, image_path]) 
     file.close()

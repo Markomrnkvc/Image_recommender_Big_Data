@@ -1,110 +1,145 @@
-import os
-import shutil
+import cv2
+import pandas as pd
 import tkinter as tk
+import numpy as np
+import matplotlib.pyplot as plt
+
 from tkinter import filedialog
+from os.path import join
+
+from Resnet_Extraction import ResNet_Feature_Extractor
+from phashes import perceptual_hashes
+from histograms import hist
+from scipy.spatial.distance import euclidean, hamming
 
 
 class Recommender:
 
-    def __init__ (self, upload_img, method):
-        self.upload_img = upload_img
-        self.method = method
-
-    def save_upload_img(source_path, upload_dir='uploads'):
-        if not os.path.exists(upload_dir):
-            os.makedirs(upload_dir)
-    
-        try:
-            filename = os.path.basename(source_path)
-            upload_path = os.path.join(upload_dir, filename)
-            shutil.copy(source_path, upload_path)   # copy file from one place to another
-            return upload_path ##man könnte evtl statt den path direkt das bild/die bilder als arr übergeben.
-        except Exception as e:
-            print(f"Error: {e}")
-            return None
+    def __init__ (self, methods):
+        self.methods = methods
         
-    def recommend(self, args.method):
-
-        """sets the method for recommending based on the chosen method."""
-
-        if args.method == "resnet":
-            return Comparer_ResNet()
-        elif args.method == "phashes":
-            return Comparer_Phashes()
-        elif args.method == "histograms":
-            return Comparer_Histograms()
-        else:
-            raise ValueError(f"unknown method: {args.method}")
-        
-class Comparer_ResNet():
-    pass
-
-class Comparer_Phashes():
-    pass
-
-class Comparer_Histograms():
-    pass
-
-    def save_upload_img(source_path, upload_dir='uploads'):
-        if not os.path.exists(upload_dir):
-            os.makedirs(upload_dir)
-    
-        try:
-            filename = os.path.basename(source_path)
-            upload_path = os.path.join(upload_dir, filename)
-            shutil.copy(source_path, upload_path)   # copy file from one place to another
-            return upload_path
-        except Exception as e:
-            print(f"Error: {e}")
-            return None
-
-    def filedialog():
-
-        # create a root window (will NOT be shown)
+    def filedialog(self):
         root = tk.Tk()
-        root.withdraw()  # hide the window
-
-        # open a filedialog (to select file from Finder etc.):
-        source_image_path = filedialog.askopenfilename(title="Upload an image")
-
-
-        # -------------------- SEARCH & SHOW RECOMMENDED IMAGES --------------------
-
-    # extract features from uploaded image as before in the preprocessing
-    def extract_features(upload_img):
-        return image_preprocessing(upload_img)
-
-    # find 10 NN by measuring the euclidean distance between the feature-vectors
-    def find_nearest_neighbors(uploaded_feature, filtered_feature_list, filtered_image_paths, k=10):
-        distances = []
-        for idx, feature in enumerate(filtered_feature_list):
-            dist = euclidean(uploaded_feature, feature)
-            distances.append((dist, filtered_image_paths[idx]))
-    
-        # sort by distance
-        distances.sort(key=lambda x: x[0])
-    
-        # return the k closest neighbors
-        return distances[:k]
-
-    if source_image_path:
-        saved_image_path = save_upload_img(source_image_path)   # save uploaded image
-
-        if saved_image_path:
-            print(f"Image successfully saved at: {saved_image_path}")
-
-            # extract features from uploaded image:
-            uploaded_feature = image_preprocessing(saved_image_path, model)
-            if uploaded_feature is not None:
-                # find NN
-                print(f"Uploaded feature shape: {uploaded_feature.shape}")
-                if feature_list:
-                    print(f"Sample feature : {feature_list}")
-                nearest_neighbors = find_nearest_neighbors(uploaded_feature, filtered_feature_list, filtered_image_paths, k=10)
-                print("10 Nearest Neighbors:")
-                for dist, img_path in nearest_neighbors:
-                    print(f"Image: {img_path}, Distance: {dist}")
+        root.withdraw()
+        source_image_paths = filedialog.askopenfilenames(title="upload your image(s)")
+        if not source_image_paths:
+            return None
+        
+        # turn image path(s) into arrays
+        source_images = []
+        for path in source_image_paths:
+            img = cv2.imread(path)
+            if img is not None:
+                source_images.append(img)
             else:
-                print("Failed to extract features from the uploaded image.")
+                print(f"Failed to load image: {path}")
+        
+        return source_images
+        
+    def recommend(self):
+        # open filedialog to select image(s):
+        source_images = self.filedialog()
+
+        if not source_images:
+            print("No image selected.")
+            return
+        
+        combined_results = []
+
+        for method in self.methods:
+            print(f"processing with method: {method}")
+
+            # extract features from the uploaded image(s):
+            features = [self.extract_features(img, method) for img in source_images]
+            uploaded_feature = np.mean(features, axis=0)
+            
+            if uploaded_feature is not None:
+                # load the features from pickle
+                pickle_path = "pickle/data.pk"
+                dataset = pd.read_pickle(pickle_path)
+                nearest_neighbors = self.find_nearest_neighbors(uploaded_feature, dataset, method, k=5)
+                combined_results.append((method, nearest_neighbors)) #combine top-k-images from each method
+            else:
+                print("Failed to extract features from the upload.")
+        # display the combined results
+        self.show_results(combined_results)
+    
+    def extract_features(self, img, method):
+        if method == "resnet_embedding":
+            resnet_extractor = ResNet_Feature_Extractor()
+            return resnet_extractor.extract_features(img)
+        elif method == "phash_vector":
+            return perceptual_hashes(img)
+        elif method == "histogram":
+            return hist(img)
         else:
-            print("Failed to save the image.")
+            raise ValueError(f"Unknown method: {method}")
+    
+    def find_nearest_neighbors(self, uploaded_feature, dataset, method, k=5):
+        distances = []
+        method_column = f"{method}"  # METHOD HAS TO BE SAME NAME AS COLS
+
+        uploaded_feature = np.ravel(uploaded_feature) # Convert uploaded_feature to a 1D array
+
+        for idx, feature in dataset[method_column].items():
+            feature = np.ravel(np.array(feature))
+
+            if method == "resnet_embedding":
+                dist = euclidean(uploaded_feature, feature)
+            elif method == "phash_vector":
+                dist = hamming(uploaded_feature, feature) * len(feature)
+            elif method == "histogram":
+                dist = self.chi_square_distance(uploaded_feature, feature)
+            else:
+                raise ValueError(f"Unknown method: {method}")
+            
+            distances.append((dist, idx)) #store distance & index
+
+        #sort distances by the computed distance
+        distances.sort(key=lambda x: x[0])
+        top_k = distances[:k]
+
+        top_images = []
+        img_path_column = pd.read_csv("csv/images.csv")
+        for _, idx in top_k:
+            image_path = img_path_column.loc[idx, 'Name']  # Assuming the paths are stored in the 'Name' column
+            img = cv2.imread(image_path)
+            if img is not None:
+                top_images.append(img)
+
+        return top_k, top_images
+
+    
+    def chi_square_distance(self, histA, histB, eps=1e-10):
+        return 0.5 * np.sum(((histA - histB) ** 2) / (histA + histB + eps))
+
+    def show_results(self, combined_results):
+        if not combined_results:
+            print("No neighbors found.")
+            return
+
+        # Calculate the total number of images to display
+        total_images = sum(len(top_images) for _, (_, top_images) in combined_results)
+        
+        # Determine grid size for subplots (rows, columns)
+        cols = 5  # Adjust this number to change the layout
+        rows = (total_images + cols - 1) // cols
+
+        plt.figure(figsize=(15, 5 * rows))  # Adjust figure size based on the number of rows
+        plt.suptitle("We thought you might also like the following:", fontsize=16)
+
+        img_idx = 1  # To track subplot index
+
+        for method, (top_k, top_images) in combined_results:
+            for i, (dist, img) in enumerate(zip(top_k, top_images)):
+                plt.subplot(rows, cols, img_idx)
+                plt.imshow(cv2.cvtColor(img, cv2.COLOR_BGR2RGB))  # Convert BGR to RGB for correct color display
+                plt.title(f"{method}: Dist: {dist[0]:.2f}")  # Display the method and distance in the title
+                plt.axis('off')
+                img_idx += 1
+
+        plt.show()
+
+
+#recommender = Recommender(method="resnet_embedding")
+#recommender.recommend()

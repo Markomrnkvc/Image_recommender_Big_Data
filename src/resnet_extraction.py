@@ -1,3 +1,4 @@
+import cv2
 import numpy as np
 
 from tqdm import tqdm
@@ -16,23 +17,17 @@ class ResNet_Feature_Extractor:
     and then extracting features out of the image-files based on the pre-trained resnet model.
     The features and the image-paths get saved in a separate pickle file, with matching IDs."""
 
-    #SUPPORTED_EXTENSIONS = ('.jpg', '.jpeg', '.png')
-
-    def __init__(self, img, model_weights='imagenet', input_shape=(224, 224, 3)):
-
+    def __init__(self, model_weights='imagenet', input_shape=(224, 224, 3)):
         self.model = self.build_model(model_weights, input_shape)
-        self.img = img
-        self.feature_list = []
-
 
 
     def build_model(self, weights, input_shape):
 
         """instantiates and returns the ResNet50 model."""
 
-        model = ResNet50(weights=weights, include_top=False, input_shape=input_shape)
-        model.trainable = False
-        model = Sequential([model, GlobalMaxPool2D()])
+        base_model = ResNet50(weights=weights, include_top=False, input_shape=input_shape)
+        base_model.trainable = False
+        model = Sequential([base_model, GlobalMaxPool2D()])
         model.summary()
         return model
     
@@ -42,19 +37,20 @@ class ResNet_Feature_Extractor:
         
         """preprocesses the image, extracts its features, returns the feature vector."""
 
-        print(f"Processing file: {image_generator.image_path}")
+        #print(f"Processing file: {image_generator.image_path}")
         try:
-            img = img.resize((224, 224)) # resize
+            if img.shape[2] == 1:  # falls das Bild nur 1 Kanal hat, konvertiere es in ein 3-Kanal-Bild
+                img = cv2.cvtColor(img, cv2.COLOR_GRAY2RGB)
+            img = cv2.resize(img, (224, 224)) # resize
             img_arr = img_to_array(img)  # convert to array
             expand_img_arr = np.expand_dims(img_arr, axis=0)  # Add batch dimension
             pre_pr_img = preprocess_input(expand_img_arr)  # Preprocess the image
             result = self.model.predict(pre_pr_img).flatten()  # Predict and flatten the output
             normal_result = result / np.linalg.norm(result)  # Normalize the result
-            #print(normal_result)
             return normal_result
         
         except Exception as e:
-            print(f"Error preprocessing file {image_generator.image_path}: {e}")
+            print(f"Error processing image: {e}")
             return None
         
 
@@ -65,15 +61,14 @@ class ResNet_Feature_Extractor:
 
         print(f"extracting features...")
         feature = self.image_preprocessing(img)
-        if feature is not None:
-            self.feature_list.append(feature)
-        return self.feature_list
+        print(f"this is the FEATURE this is the FEATURE this is the FEATURE this is the FEATURE: {feature}")
+        return feature
 
 
 
 # ------------------------- MAIN -------------------------
 
-def main():
+"""def main():
     extraction = ResNet_Feature_Extractor()
 
     # extract features and save them to pickle files:
@@ -82,4 +77,4 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    main()"""
