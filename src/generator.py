@@ -46,6 +46,7 @@ def create_csv(args, csv_path):
     						#"Width", "Channels", 
     						#"Avg Blue", "Avg Red", 
     						#"Avg Green", "RGB_Histogram", "Perceptual_Hash"
+
     #creating csv if not existing
     if os.path.exists(error_path) == False: 
     	with open(error_path, 'w', newline = '') as file: 

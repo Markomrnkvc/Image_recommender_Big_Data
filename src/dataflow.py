@@ -75,10 +75,12 @@ def dataflow(args):
                 #calculating perceptual hashes
                 phash_vector = perceptual_hashes(img)
                 
+                #calculating embeddings
                 embedding = random.randint(0,1000) #need placeholder, no embeddings yet
                 
                 #saving data in pickle file
                 save_in_df(embedding, image_id, histogram, phash_vector, df)# h, w, c, avg_color, 
+
                 #closing pickle after 50 images to save progress
                 if image_id % 1000 == 0:
                     #closing pickle to save
