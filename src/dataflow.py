@@ -64,7 +64,7 @@ def dataflow(args):
             #print(image_id)
             #getting data out of images
             try:
-                image_id, image_path, h, w, c, avg_color = get_data(args, img, image_path, image_id, csv_path)
+                #image_id, image_path, h, w, c, avg_color = get_data(args, img, image_path, image_id, csv_path)
                 
                 #writing data into csv
                 data_writer(image_id, image_path, csv_path)# h, w, c, avg_color, histogram, phash_vector,
