@@ -34,7 +34,7 @@ csv_file = "csv\images.csv" #"C:/Users/marko/OneDrive/Documents/viertes_Semester
 error_file = "csv\error_images.csv"
 
 #path to pickle file
-pk_file = "pickle/data.pk"
+pk_file = "pickle/data.pkl"
 
 csv_path = join(current_path, csv_file)
 error_path = join(current_path, error_file)
@@ -46,14 +46,17 @@ def dataflow(args):
     create_csv(args, csv_path)
     create_pk(pk_path)
     
+    
+    #checking if pickle exists, if true; opening pickle
+    if os.path.getsize(pk_path) > 0:
+        df = pd.read_pickle(pk_path)
+    else:
+        print("file not found")
     try:
         gen = next(image_generator(args))
         if gen == None:
                 print("\nNo new images")
                 return
-        
-        #opening pickle
-        df = pd.read_pickle(pk_path)
         
     
         #for img ,image_path, image_id in tqdm(image_generator(args), total=444880):
@@ -63,23 +66,23 @@ def dataflow(args):
             try:
                 image_id, image_path, h, w, c, avg_color = get_data(args, img, image_path, image_id, csv_path)
                 
+                #writing data into csv
+                data_writer(image_id, image_path, csv_path)# h, w, c, avg_color, histogram, phash_vector,
+                
                 #calculating histogram of the image
                 histogram = hist(img)
                 
                 #calculating perceptual hashes
                 phash_vector = perceptual_hashes(img)
                 
-                #writing data into csv
-                data_writer(image_id, image_path, h, w, c, avg_color, histogram, phash_vector, csv_path)
-                
-                
-                #saving data in pickle file
+                #calculating embeddings
                 embedding = random.randint(0,1000) #need placeholder, no embeddings yet
                 
-                save_in_df(embedding, image_id, h, w, c, avg_color, histogram, phash_vector, df)
-                
+                #saving data in pickle file
+                save_in_df(embedding, image_id, histogram, phash_vector, df)# h, w, c, avg_color, 
+
                 #closing pickle after 50 images to save progress
-                if image_id % 50 == 0:
+                if image_id % 1000 == 0:
                     #closing pickle to save
                     df.to_pickle(pk_path)
                     #opening pickle
@@ -93,11 +96,12 @@ def dataflow(args):
                		writer.writerow([image_path]) 
                 file.close() 
                
+                df.to_pickle(pk_path)
                 
             #print("\nimage data loaded into csv") 
         print(f"number of currently loaded images: {image_id}, {image_path}")
         #closing pickle at end of generator to save
-        df.to_pickle(pk_path)
+        #df.to_pickle(pk_path)
 
     except:
         StopIteration

@@ -17,6 +17,9 @@ def hist(img):
     """Function which calculates the histogram for RGB images
     and returns a flattened histogram vector including all three channels"""
     def calchist(img):
+        if img.ndim == 2:
+            img = np.stack((img,) * 3, axis=-1)
+        
         hist_r = cv.calcHist([img], [0], None, [256], [0, 256]).flatten()
         hist_g = cv.calcHist([img], [1], None, [256], [0, 256]).flatten()
         hist_b = cv.calcHist([img], [2], None, [256], [0, 256]).flatten()

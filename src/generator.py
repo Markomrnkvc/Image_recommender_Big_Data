@@ -41,10 +41,12 @@ def create_csv(args, csv_path):
     	with open(csv_path, 'w', newline = '') as file: 
     		writer = csv.writer(file) 
     		
-    		writer.writerow(["ID", "Name", "Height", 
-    						"Width", "Channels", 
-    						"Avg Blue", "Avg Red", 
-    						"Avg Green", "RGB_Histogram", "Perceptual_Hash"]) 
+    		writer.writerow(["ID", "Name"]) 
+            #, "Height", 
+    						#"Width", "Channels", 
+    						#"Avg Blue", "Avg Red", 
+    						#"Avg Green", "RGB_Histogram", "Perceptual_Hash"
+
     #creating csv if not existing
     if os.path.exists(error_path) == False: 
     	with open(error_path, 'w', newline = '') as file: 
@@ -136,11 +138,12 @@ def get_data(args, img, image_path, image_id, csv_path):
     return image_id, image_path, h, w, c, avg_color
 
 
-def data_writer(image_id, image_path, h, w, c, avg_color, histogram, phash_vector, csv_path):
+def data_writer(image_id, image_path, csv_path): #, h, w, c, avg_color, histogram, phash_vector
 
     with open(csv_path, 'a', newline = '') as file: 
            writer = csv.writer(file) 
-           writer.writerow([image_id, image_path, h, w, c, 
-                           avg_color[0], avg_color[1], 
-                           avg_color[2], histogram, phash_vector]) 
+           writer.writerow([image_id, image_path]) 
+           #, h, w, c, 
+                           #avg_color[0], avg_color[1], 
+                           #avg_color[2], histogram, phash_vector
     file.close()
