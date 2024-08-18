@@ -67,6 +67,10 @@ def fit_cluster(n_clusters = 10):
     emb_col = pd.DataFrame(data['Embeddings'].tolist())
     
     """
+    #getting data for all 3 combined
+    all_33 = 
+    """
+    """
     #scaling of data
     scaler = StandardScaler()
     
@@ -93,7 +97,11 @@ def fit_cluster(n_clusters = 10):
         
         kmeans_emb = KMeans( n_clusters = n_clusters, random_state = 0)
         
-        return kmeans_emb, kmeans_histo, kmeans_phash
+        """
+        kmeans_all = KMeans( n_clusters = n_clusters, random_state = 0)
+        """
+        
+        return kmeans_emb, kmeans_histo, kmeans_phash#, kmeans_all
     #fitting model to methods
     def fit_and_save_kmeans(n_clusters):
         print("\nfitting and saving kmeans-models\n")
@@ -239,6 +247,9 @@ def predict_cluster(img, img_path, args, data):#, histogram, embedding, phash):
         new_data_df = pd.DataFrame(scaler.transform(new_data_df),
                                    columns= new_data_df.columns )
         """
+    
+        
+            
     # Weise den neuen Daten Cluster zu, ohne das Modell neu zu trainieren
     new_data['cluster'] = kmeans.predict(new_data_df)
 

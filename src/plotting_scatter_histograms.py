@@ -8,7 +8,6 @@ import pickle
 import numpy as np
 import matplotlib.pyplot as plt
 from sklearn.manifold import TSNE
-import umap
 import seaborn as sns
 import os
 from os.path import join
@@ -44,6 +43,7 @@ unique_clusters = np.unique(clusters)
 num_clusters = len(unique_clusters)
 print(f"Number of clusters: {num_clusters}")
 tsne = TSNE(n_components=2, random_state=42)
+#early_exaggeration=25
 embedding = tsne.fit_transform(histograms)
 
 # Convert clusters to categorical type
@@ -60,8 +60,8 @@ scatter = sns.scatterplot(x=embedding[:, 0], y=embedding[:, 1], hue=clusters, pa
 handles, labels = scatter.get_legend_handles_labels()
 scatter.legend(handles=handles, labels=[f"Cluster {int(label)}" for label in labels])
 
-plt.title(f'UMAP Scatter Plot of Image Histograms Colored by {num_clusters} Clusters')
-plt.xlabel('UMAP Dimension 1')
-plt.ylabel('UMAP Dimension 2')
+plt.title('TSNE Scatter Plot of RGB Histograms Colored by Clusters')
+plt.xlabel('TSNE Dimension 1')
+plt.ylabel('TSNE Dimension 2')
 plt.legend(title=f'Clusters (Total: {num_clusters})')
 plt.show()

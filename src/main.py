@@ -41,7 +41,7 @@ if args.mode == "generate":
     dataflow(args)
     
 elif args.mode == "cluster":
-    fit_cluster(n_clusters=10)
+    fit_cluster(n_clusters=30)
     
 elif args.mode == "recommender" and args.method != None:
     import random
@@ -60,6 +60,7 @@ elif args.mode == "recommender" and args.method != None:
     embedding = random.randint(0,1000)
 
     phash_vector = perceptual_hashes(img)
+    
     
     if args.method == "histogram":
         print(predict_cluster(img, image_path, args, data = histogram))

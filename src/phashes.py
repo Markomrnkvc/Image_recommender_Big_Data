@@ -101,9 +101,9 @@ def perceptual_hashes(img, return_img = False):
         
         return phash_vector
     
-
-"""
-Zum ausprobieren:
+"""    
+#import time
+#Zum ausprobieren:
 
 img = cv2.imread("D:/data/image_data/Landscapes/00000362_(6).jpg")#"D:\data\image_data\Landscapes\00000021_(6).jpg"
 img_tocompare = cv2.imread("D:/data/image_data/Landscapes/00000363_(6).jpg")
@@ -111,6 +111,8 @@ img_tocompare = cv2.imread("D:/data/image_data/Landscapes/00000363_(6).jpg")
 
 phash_vector, hashed_img = perceptual_hashes(img, return_img=True)
 phash_vector2, hashed_img2 = perceptual_hashes(img_tocompare, return_img=True)
+
+print(len(phash_vector))
 """
 #phash_vector = perceptual_hashes(img)
 #phash_vector2= perceptual_hashes(img_tocompare)
@@ -123,7 +125,7 @@ print(f" hamming: {hamming(phash_vector, phash_vector2)}")
 
 #measuring time
 end = time.time()
-print(f" runtime: {end - start}")
+#print(f" runtime: {end - start}")
 
 fig, (ax1, ax2) = plt.subplots(1, 2)  # 1 row, 2 columns
 
