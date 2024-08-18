@@ -30,7 +30,7 @@ csv_file = "csv/images.csv" #"C:/Users/marko/OneDrive/Documents/viertes_Semester
 error_file = "csv/error_images.csv"
 
 #path to pickle file
-pk_file = "pickle/data.pk"
+pk_file = "pickle/data.pkl"
 
 csv_path = join(current_path, csv_file)
 error_path = join(current_path, error_file)
@@ -42,62 +42,66 @@ def dataflow(args):
     create_csv(args, csv_path)
     create_pk(pk_path)
     
+    
+    #checking if pickle exists, if true; opening pickle
+    if os.path.getsize(pk_path) > 0:
+        df = pd.read_pickle(pk_path)
+    else:
+        print("file not found")
     try:
-        # Entferne diese Zeile, um den Generator nicht vorzeitig zu erschöpfen
-        # gen = next(image_generator(args))
-        # if gen == None:
-        #     print("\nNo new images")
-        #     return
+        gen = next(image_generator(args))
+        if gen == None:
+                print("\nNo new images")
+                return
         
-        # Öffne das Pickle
+        #opening pickle
         df = pd.read_pickle(pk_path)
         
-        # Hauptverarbeitungsschleife
-        for img, image_path, image_id in image_generator(args):
-            print(f"Verarbeite Bild: {image_path} mit ID {image_id}")
-
-            # Berechne Histogramm
-            histogram = hist(img)
-            
-            # Berechne perceptual hashes
-            phash_vector = perceptual_hashes(img)
-
-            # Berechne Vektoren aus ResNet
-            extractor = ResNet_Feature_Extractor(model_weights="imagenet")
-            print("ResNet_Feature_Extractor erfolgreich initialisiert")
-            resnet_embedding = extractor.extract_features(img)
-            print(f"ResNet-Embedding erfolgreich berechnet für Bild ID {image_id}")
-            
-            # Schreibe Daten in CSV
+    
+        #for img ,image_path, image_id in tqdm(image_generator(args), total=444880):
+        for img ,image_path, image_id in image_generator(args):
+            #print(image_id)
+            #getting data out of images
             try:
-                data_writer(image_id, image_path, csv_path)
-                print(f"Bilddaten erfolgreich in CSV geschrieben: ID={image_id}, Pfad={image_path}")
-            except Exception as e:
-                print(f"Fehler beim Schreiben in die CSV-Datei: {e}")
-            
-            # Speichere Daten in der Pickle-Datei
-            print("vor dem speichern in DF")
-            save_in_df(resnet_embedding, image_id, histogram, phash_vector, df, pk_path)
-            print("++++++ ++ + + + + NACH dem speichern in DF")
-            print(df.head())
-            
-            # Schließe Pickle nach jeder 50. Iteration
-            if image_id % 50 == 0:
-                pd.to_pickle(df, pk_path)
-                print(f"WWWWWWWWWWWWWWWWW WWW WWW WWW WWW WWW WWW WW THIS is THE dataFRAME after TO_piCKLE: {df}")
-                df = pd.read_pickle(pk_path)
-        
+                #calculating histogram of the image
+                histogram = hist(img)
+                
+                #calculating perceptual hashes
+                phash_vector = perceptual_hashes(img)
+                
+                #writing data into csv
+                data_writer(image_id, image_path, histogram, phash_vector, csv_path)
+                
+                extractor = ResNet_Feature_Extractor(model_weights="imagenet")
+                resnet_embedding = extractor.extract_features(img)
+                
+                save_in_df(resnet_embedding, image_id, histogram, phash_vector, df)
+                
+                #closing pickle after 50 images to save progress
+                if image_id % 50 == 0:
+                    #closing pickle to save
+                    df.to_pickle(pk_path)
+                    #opening pickle
+                    df = pd.read_pickle(pk_path)
+            except:
+                AttributeError
+                print(f"\nError loading image {image_path}")
+                
+                with open(error_path, 'a', newline = '') as file: 
+                    writer = csv.writer(file) 
+                    writer.writerow([image_path]) 
+                file.close() 
+               
+                
+            #print("\nimage data loaded into csv") 
         print(f"number of currently loaded images: {image_id}, {image_path}")
-        pd.to_pickle(df, pk_path)
+        #closing pickle at end of generator to save
+        #df.to_pickle(pk_path)
 
-    except StopIteration:
-        print(f"\nno new images to load into database or generator interrupted manually")
-        pd.to_pickle(df, pk_path)
-    """except:
+    except:
         StopIteration
-        
-        print(f"\nnumber currently loaded images: ") #{image_id}, {image_path}
+        print(f"\nnumber currently loaded images: {image_id}, {image_path}")
         #closing pickle at end of generator to save
         df.to_pickle(pk_path)
-        print("\nno new images to load into database or generator interrupted manually")"""
+        print("\nno new images to load into database or generator interrupted manually")
 

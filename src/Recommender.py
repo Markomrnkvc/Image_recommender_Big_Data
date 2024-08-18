@@ -78,7 +78,7 @@ class Recommender:
     
     def find_nearest_neighbors(self, uploaded_feature, dataset, method, k=5):
         distances = []
-        method_column = f"{method}"  # METHOD HAS TO BE SAME NAME AS COLS
+        method_column = f"{method}"  # #### 'Embeddings', 'RGB_Histogram', 'Perceptual_Hash' //METHOD HAS TO BE SAME NAME AS COLS
 
         uploaded_feature = np.ravel(uploaded_feature) # Convert uploaded_feature to a 1D array
 
