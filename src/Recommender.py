@@ -1,4 +1,5 @@
 import cv2
+import os
 import pandas as pd
 import tkinter as tk
 import numpy as np
@@ -13,6 +14,8 @@ from scipy.spatial.distance import euclidean, hamming
 
 
 class Recommender:
+    global root
+    root = os.getcwd()
 
     def __init__ (self, methods):
         self.methods = methods
@@ -55,16 +58,23 @@ class Recommender:
             if uploaded_feature is not None:
                 #cluster the upload image to get class number
                 print("before clustering")
-                print(uploaded_feature)
+                #print(uploaded_feature)
                 print(method)
                 cluster = predict_cluster('unused_path', method, uploaded_feature)
                 print(cluster)
 
                 # load the features from pickle: filtered by matching cluster numbers
-                pickle_path = "/Users/mjy/Downloads/data_clustered_5kentries.pkl" #"pickle/data_cluster.pkl"
+                pickle_path = os.path.join(root, "pickle/data_cluster.pkl")
                 dataset = pd.read_pickle(pickle_path)
                 
-                clustered_dataset = dataset[dataset['cluster'] == cluster] #f"{cluster}_{method}" #only get entries with dame cluster as upload
+                #only get entries with the same cluster as the upload:
+                if method == "embeddings":
+                    clustered_dataset = dataset[dataset['cluster_embedding'] == cluster]
+                elif method == "hashes":
+                    clustered_dataset = dataset[dataset['cluster_perceptual_hashes'] == cluster]
+                elif method == "histogram":
+                    clustered_dataset = dataset[dataset['cluster_histogram'] == cluster]
+
                 nearest_neighbors = self.find_nearest_neighbors(uploaded_feature, clustered_dataset, method, k=5)
                 combined_results.append((method, nearest_neighbors)) #combine top-k-images from each method
             else:
@@ -86,12 +96,19 @@ class Recommender:
     
     def find_nearest_neighbors(self, uploaded_feature, dataset, method, k=5):
         distances = []
-        method_column = f"{method}"  # #### 'Embeddings', 'RGB_Histogram', 'Perceptual_Hash' //METHOD HAS TO BE SAME NAME AS COLS
-        uploaded_feature = np.ravel(uploaded_feature) # convert uploaded_feature to a 1D array
 
-        for idx, feature in dataset[method_column].items():
+        # set method_column to fitting column-name according to the method used
+        if method == "embeddings":
+            method_column = 'Embeddings'
+        elif method == "hashes":
+            method_column = 'Perceptual_Hash'
+        elif method == "histogram":
+            method_column = 'RGB_Histogram'
+
+        uploaded_feature = np.ravel(uploaded_feature) #convert uploaded_feature to a 1D array
+        
+        for image_id, feature in zip(dataset['Image_ID'],dataset[method_column]):
             feature = np.ravel(np.array(feature))
-
             if method == "embeddings":
                 dist = euclidean(uploaded_feature, feature)
             elif method == "hashes":
@@ -101,16 +118,20 @@ class Recommender:
             else:
                 raise ValueError(f"Unknown method: {method}")
             
-            distances.append((dist, idx)) #store distance & index
+            distances.append((dist, image_id)) #store distance & image id
 
         #sort distances by the computed distance
         distances.sort(key=lambda x: x[0])
         top_k = distances[:k]
-
         top_images = []
-        img_path_column = pd.read_csv("csv/images.csv")
+
+        csv_path = os.path.join(root, "csv/images.csv")
+        img_path_column = pd.read_csv(csv_path)
+
         for _, idx in top_k:
-            image_path = img_path_column.loc[idx, 'Name'] #get path of recommended image FROM DATABASE 
+            print(idx)
+            image_path = img_path_column[img_path_column['ID'] == image_id]['Name'].iloc[0] #get path of recommended image #df[df['Age'] == value]
+            print(f"image_path: {image_path}")
             img = cv2.imread(image_path)
             if img is not None:
                 top_images.append(img)
