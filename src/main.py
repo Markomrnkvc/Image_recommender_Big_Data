@@ -9,7 +9,7 @@ from Recommender import Recommender
 from clustering import fit_cluster, predict_cluster
 import argparse
 import os
-from Resnet_Extraction import ResNet_Feature_Extractor
+from resnet_extraction import ResNet_Feature_Extractor
 
 os.environ["CUDA_VISIBLE_DEVICES"] = "-1"
 
@@ -20,20 +20,14 @@ parser = argparse.ArgumentParser(
     epilog="Students project",
 )
 
-#parser.add_argument("mode", choices=["generator", "recomender"])
-#parser.add_argument("mode", choices=["generate", "cluster", "fit"])
 parser.add_argument("-m", "--mode",choices=["generate", "cluster", "recommender"],  help="Choose which mode you want to execute")
 parser.add_argument("-f", "--folder", help="Path to folder containing the images")
-parser.add_argument("-me", "--method", choices=["histogram", "embeddings", "hashes"], help="choose which method you want to use to compare the new image with the data base")
+#if 'mode' is 'recommender':
+parser.add_argument("-me", "--method", choices=["histogram", "embeddings", "hashes"], help="choose which method you want to use for comparing the upload with the data base")
 
 parser.add_argument("-b", "--batch_size", action="store", default=500, help="Batch size for processing images")
 
-#parser.add_argument("method", choices=["histogram", "embeddings", "hashes"])
-
-
-
-#if 'mode' is 'recommender':
-parser.add_argument('--method', nargs='+', choices=['resnet_embedding', 'phash_vector', 'histogram'], required=True, help='Specify one or more methods')
+#parser.add_argument('--method', nargs='+', choices=['resnet_embedding', 'phash_vector', 'histogram'], required=True, help='Specify one or more methods')
 
 args = parser.parse_args()
 
@@ -71,7 +65,7 @@ elif args.mode == "recommender" and args.method != None:
     if args.method == "histogram":
         print(predict_cluster(img, image_path, args, data = histogram))
     elif args.method == "embeddings":
-        print(predict_cluster(img, image_path, args, data = embedding))
+        print(predict_cluster(img, image_path, args, data = resnet_embedding))
     elif args.method == "hashes":
         print(predict_cluster(img, image_path, args, data = phash_vector))
     

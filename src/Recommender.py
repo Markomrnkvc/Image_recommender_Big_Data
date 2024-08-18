@@ -14,6 +14,32 @@ from scipy.spatial.distance import euclidean, hamming
 
 #data_cluster.pkl
 #----> .pk unbedingt in .pkl!
+"""
+import random
+from histograms import hist
+from phashes import perceptual_hashes
+import cv2
+    
+image_path = "C:/Users/marko/Documents/viertes_semester/BigData/Image_recommender_Big_Data/src/images/000000000024.jpg"
+
+img = cv2.imread(image_path)
+#modelfile = "C:/Users/marko/Documents/viertes_semester/BigData/Image_recommender_Big_Data/src/pickle/kmeans_model.pkl"
+#img = cv2.imread(image_path) 
+
+histogram = hist(img)
+
+extractor = ResNet_Feature_Extractor(model_weights="imagenet")
+resnet_embedding = extractor.extract_features(img)
+
+phash_vector = perceptual_hashes(img)
+    
+if args.method == "histogram":
+    print(predict_cluster(img, image_path, args, data = histogram))
+elif args.method == "embeddings":
+    print(predict_cluster(img, image_path, args, data = resnet_embedding))
+elif args.method == "hashes":
+    print(predict_cluster(img, image_path, args, data = phash_vector))
+"""
 class Recommender:
 
     def __init__ (self, methods):
@@ -55,21 +81,26 @@ class Recommender:
             uploaded_feature = np.mean(features, axis=0)
             
             if uploaded_feature is not None:
-                # load the features from pickle
+                #cluster the upload image to get class number
+                cluster = predict_cluster(source_images[0], 'path_unused', method, uploaded_feature)
+
+                # load the features from pickle: filtered by matching cluster numbers
                 pickle_path = "pickle/data.pk"
                 dataset = pd.read_pickle(pickle_path)
-                nearest_neighbors = self.find_nearest_neighbors(uploaded_feature, dataset, method, k=5)
+                clustered_dataset = dataset[dataset['cluster'] == cluster] #only get entries with dame cluster as upload
+                nearest_neighbors = self.find_nearest_neighbors(uploaded_feature, clustered_dataset, method, k=5)
                 combined_results.append((method, nearest_neighbors)) #combine top-k-images from each method
             else:
                 print("Failed to extract features from the upload.")
+
         # display the combined results
         self.show_results(combined_results)
     
     def extract_features(self, img, method):
-        if method == "resnet_embedding":
+        if method == "embeddings":
             resnet_extractor = ResNet_Feature_Extractor()
             return resnet_extractor.extract_features(img)
-        elif method == "phash_vector":
+        elif method == "hashes":
             return perceptual_hashes(img)
         elif method == "histogram":
             return hist(img)
@@ -80,14 +111,14 @@ class Recommender:
         distances = []
         method_column = f"{method}"  # #### 'Embeddings', 'RGB_Histogram', 'Perceptual_Hash' //METHOD HAS TO BE SAME NAME AS COLS
 
-        uploaded_feature = np.ravel(uploaded_feature) # Convert uploaded_feature to a 1D array
+        uploaded_feature = np.ravel(uploaded_feature) # convert uploaded_feature to a 1D array
 
         for idx, feature in dataset[method_column].items():
             feature = np.ravel(np.array(feature))
 
-            if method == "resnet_embedding":
+            if method == "embeddings":
                 dist = euclidean(uploaded_feature, feature)
-            elif method == "phash_vector":
+            elif method == "hashes":
                 dist = hamming(uploaded_feature, feature) * len(feature)
             elif method == "histogram":
                 dist = self.chi_square_distance(uploaded_feature, feature)
@@ -103,7 +134,7 @@ class Recommender:
         top_images = []
         img_path_column = pd.read_csv("csv/images.csv")
         for _, idx in top_k:
-            image_path = img_path_column.loc[idx, 'Name']  # Assuming the paths are stored in the 'Name' column
+            image_path = img_path_column.loc[idx, 'Name'] #get path of recommended image
             img = cv2.imread(image_path)
             if img is not None:
                 top_images.append(img)
@@ -114,7 +145,7 @@ class Recommender:
     def chi_square_distance(self, histA, histB, eps=1e-10):
         return 0.5 * np.sum(((histA - histB) ** 2) / (histA + histB + eps))
 
-    def show_results_not(self, combined_results):
+    def show_results(self, combined_results):
         if not combined_results:
             print("No neighbors found.")
             return
@@ -123,52 +154,22 @@ class Recommender:
         total_images = sum(len(top_images) for _, (_, top_images) in combined_results)
         
         # Determine grid size for subplots (rows, columns)
-        cols = 5  # Adjust this number to change the layout
+        cols = 5 # bc 5 recommended images are demanded
         rows = (total_images + cols - 1) // cols
-
-        plt.figure(figsize=(15, 5 * rows))  # Adjust figure size based on the number of rows
+        plt.figure(figsize=(15, 5 * rows))  #figure size based on the number of rows
         plt.suptitle("We thought you might also like the following:", fontsize=16)
 
-        img_idx = 1  # To track subplot index
+        img_idx = 1  #tracks the subplot index
 
         for method, (top_k, top_images) in combined_results:
             for i, (dist, img) in enumerate(zip(top_k, top_images)):
                 plt.subplot(rows, cols, img_idx)
-                plt.imshow(cv2.cvtColor(img, cv2.COLOR_BGR2RGB))  # Convert BGR to RGB for correct color display
-                plt.title(f"{method}: Dist: {dist[0]:.2f}")  # Display the method and distance in the title
+                plt.imshow(cv2.cvtColor(img, cv2.COLOR_BGR2RGB))  # convert BGR to RGB for correct color display
+                plt.title(f"{method}: Dist: {dist[0]:.2f}")  # display method, distance in the title
                 plt.axis('off')
                 img_idx += 1
 
         plt.show()
-
-    def show_results(self, combined_results):
-        if not combined_results:
-            print("No neighbors found.")
-            return
-
-        # total number of images that need to be displayed:
-        total_images = sum(len(top_images) for _, (_, top_images) in combined_results)
-
-        cols = 5  # bc 5 recommended images are demanded
-        rows = (total_images + cols - 1) // cols
-        plt.figure(figsize=(15, 5 * rows))
-        plt.suptitle("We thought you might also like the following:", fontsize=16)
-
-        img_idx = 1
-
-        for method, (top_k, top_images) in combined_results:
-            for i, (dist, img) in enumerate(zip(top_k, top_images)):
-                ax = plt.subplot(rows, cols, img_idx)
-                plt.imshow(cv2.cvtColor(img, cv2.COLOR_BGR2RGB))  # vonvert BGR to RGB
-                ax.set_title(f"{method}: Dist: {dist[0]:.2f}", fontsize=10)
-                plt.axis('off')
-                img_idx += 1
-
-        #plt.tight_layout(h_pad=0.2, w_pad=0.3)  # reduce the space between rows (vertically)
-        #plt.subplots_adjust(hspace=0.1)  # decreases space between rows
-        plt.show()
-
-
 
 
 #recommender = Recommender(method="resnet_embedding")
