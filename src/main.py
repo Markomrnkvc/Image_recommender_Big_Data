@@ -28,7 +28,6 @@ parser = argparse.ArgumentParser(
 parser.add_argument("-m", "--mode",choices=["generate", "cluster", "recommender"],  help="Choose which mode you want to execute")
 parser.add_argument("-f", "--folder", help="Path to folder containing the images")
 parser.add_argument("-me", "--method", nargs='+', choices=["histogram", "embeddings", "hashes"], help="choose which method you want to use for comparing the upload with the data base")
-parser.add_argument("-b", "--batch_size", action="store", default=500, help="Batch size for processing images")
 
 args = parser.parse_args()
 
