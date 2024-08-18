@@ -145,7 +145,7 @@ def fit_cluster(n_clusters = 10):
 
 
 
-def predict_cluster(img, img_path, args, data):#, histogram, embedding, phash):
+def predict_cluster(img_path, method, data):#, histogram, embedding, phash):
     '''
     Returns the cluster (int) the uploaded image belongs to
     
@@ -165,19 +165,19 @@ def predict_cluster(img, img_path, args, data):#, histogram, embedding, phash):
     
     current_path = os.getcwd()
     
-    if args.method == 'histogram':
-        modelfile = "pickle/kmeans_models/kmeans_model_histograms.pkl"
+    if method == 'histogram':
+        modelfile = "kmeans_models/kmeans_model_histograms.pkl"
         modelfile = join(current_path, modelfile)
         #modelfile = "C:/Users/marko/Documents/viertes_semester/BigData/Image_recommender_Big_Data/src/pickle/kmeans_models/kmeans_model_histograms.pkl"
         
         #data = histogram
        
-    elif args.method == 'embeddings':
+    elif method == 'embeddings':
         modelfile = "pickle/kmeans_models/kmeans_model_embeddings.pkl"
         modelfile = join(current_path, modelfile)
         #data = embedding
         
-    elif args.method == 'hashes':
+    elif method == 'hashes':
         modelfile = "pickle/kmeans_models/kmeans_model_perceptualhashes.pkl"
         modelfile = join(current_path, modelfile)
         #data = phash_vector
@@ -187,7 +187,7 @@ def predict_cluster(img, img_path, args, data):#, histogram, embedding, phash):
 
 
     
-    if args.method == 'histogram':
+    if method == 'histogram':
         new_data = pd.DataFrame({
             'Name': img_path,
             'RGB_Histogram': [data]
@@ -205,7 +205,7 @@ def predict_cluster(img, img_path, args, data):#, histogram, embedding, phash):
         new_data_df = pd.DataFrame(scaler.transform(new_data_df),
                                    columns= new_data_df.columns )
         """
-    elif args.method == 'embeddings':
+    elif method == 'embeddings':
         new_data = pd.DataFrame({
             'Name': img_path,
             'Embeddings': [data]
@@ -222,7 +222,7 @@ def predict_cluster(img, img_path, args, data):#, histogram, embedding, phash):
         new_data_df = pd.DataFrame(scaler.transform(new_data_df),
                                    columns= new_data_df.columns )
         """
-    elif args.method == 'hashes':
+    elif method == 'hashes':
         new_data = pd.DataFrame({
             'Name': img_path,
             'Perceptual_Hash': [data]
@@ -240,8 +240,9 @@ def predict_cluster(img, img_path, args, data):#, histogram, embedding, phash):
                                    columns= new_data_df.columns )
         """
     # Weise den neuen Daten Cluster zu, ohne das Modell neu zu trainieren
+    print("vor dem predicten")
     new_data['cluster'] = kmeans.predict(new_data_df)
-
+    print("nach dem predicten")
 
     return(new_data.iloc[0]['cluster'])
     
