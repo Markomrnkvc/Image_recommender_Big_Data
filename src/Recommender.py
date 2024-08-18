@@ -68,7 +68,10 @@ class Recommender:
                 dataset = pd.read_pickle(pickle_path)
                 
                 #only get entries with the same cluster as the upload:
-                if method == "embeddings":
+                if method == "embeddings" and method == "hashes" and method == "histogram":
+                    print("in first if*++++++++")
+                    clustered_dataset = dataset[dataset['cluster_embedding'] == cluster]
+                elif method == "embeddings":
                     clustered_dataset = dataset[dataset['cluster_embedding'] == cluster]
                 elif method == "hashes":
                     clustered_dataset = dataset[dataset['cluster_perceptual_hashes'] == cluster]

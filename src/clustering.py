@@ -208,7 +208,7 @@ def predict_cluster(img_path, method, data):#, histogram, embedding, phash):
     elif method == 'embeddings':
         new_data = pd.DataFrame({
             'Name': img_path,
-            'Embeddings': [data]
+            'Embeddings': data
         })
         
         # Konvertiere die neue Liste der perceptual hashes in ein DataFrame
