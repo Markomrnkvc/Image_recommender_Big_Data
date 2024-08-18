@@ -10,7 +10,7 @@ def create_table(conn):
     #hier können einfach weitere commands hinzugefügt werden, die dann alle ausgeführt werden
     commands = (
         """
-        CREATE TABLE IF NOT EXISTS images_in_db (
+        CREATE TABLE IF NOT EXISTS images_into_db (
             id SERIAL PRIMARY KEY,
             name VARCHAR(255) NOT NULL
         )
@@ -40,7 +40,7 @@ def import_csv_to_db(conn, csv_path):
             # double check if there are only 2 values
             if len(row_to_insert) == 2:
                 cur.execute(
-                    "INSERT INTO images_in_db (id, name) VALUES (%s, %s)",
+                    "INSERT INTO images_into_db (id, name) VALUES (%s, %s)",
                     row_to_insert
                 )
             else:
