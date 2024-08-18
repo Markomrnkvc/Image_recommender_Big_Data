@@ -7,12 +7,13 @@ import matplotlib.pyplot as plt
 from tkinter import filedialog
 from os.path import join
 
-from Resnet_Extraction import ResNet_Feature_Extractor
+from resnet_extraction import ResNet_Feature_Extractor
 from phashes import perceptual_hashes
 from histograms import hist
 from scipy.spatial.distance import euclidean, hamming
 
-
+#data_cluster.pkl
+#----> .pk unbedingt in .pkl!
 class Recommender:
 
     def __init__ (self, methods):

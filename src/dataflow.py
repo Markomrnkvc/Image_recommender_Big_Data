@@ -8,8 +8,7 @@ from generator import create_csv, image_generator, data_writer
 from dataframe import create_pk, save_in_df
 from histograms import hist
 from phashes import perceptual_hashes
-from Resnet_Extraction import ResNet_Feature_Extractor
-
+from resnet_extraction import ResNet_Feature_Extractor
 
 import os
 from os.path import join, isfile
