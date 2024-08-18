@@ -19,7 +19,7 @@ class Recommender:
         
     def filedialog(self):
         root = tk.Tk()
-        root.withdraw()
+        #root.withdraw()
         source_image_paths = filedialog.askopenfilenames(title="upload your image(s)")
         if not source_image_paths:
             return None
@@ -55,15 +55,28 @@ class Recommender:
             if uploaded_feature is not None:
                 #cluster the upload image to get class number
                 print("before clustering")
-                print(uploaded_feature)
+                #print(uploaded_feature)
                 print(method)
                 cluster = predict_cluster('unused_path', method, uploaded_feature)
                 print(cluster)
 
                 # load the features from pickle: filtered by matching cluster numbers
-                pickle_path = "/Users/mjy/Downloads/data_clustered_5kentries.pkl" #"pickle/data_cluster.pkl"
+                """
+                pfad zur pickle anpassen
+                """
+                pickle_path = "C:/Users/marko/OneDrive/Desktop/Image_recommender_Big_Data/src/pickle/data_clustered.pkl" #"pickle/data_cluster.pkl"
                 dataset = pd.read_pickle(pickle_path)
-                clustered_dataset = dataset[dataset['cluster'] == cluster] #only get entries with dame cluster as upload
+                
+                """
+                if bafrage nach method und dann 
+                clustered_dataset = dataset[dataset['cluster_histogram'] == cluster]
+                oder
+                clustered_dataset = dataset[dataset['cluster_embedding'] == cluster]
+                oder
+                clustered_dataset = dataset[dataset['cluster_perceptual_hashes'] == cluster]
+                """
+                clustered_dataset = dataset[dataset['cluster_histogram'] == cluster] #only get entries with dame cluster as upload
+                print(method)
                 nearest_neighbors = self.find_nearest_neighbors(uploaded_feature, clustered_dataset, method, k=5)
                 combined_results.append((method, nearest_neighbors)) #combine top-k-images from each method
             else:
@@ -74,8 +87,10 @@ class Recommender:
     
     def extract_features(self, img, method):
         if method == "embeddings":
+            
             resnet_extractor = ResNet_Feature_Extractor()
             return resnet_extractor.extract_features(img)
+            
         elif method == "hashes":
             return perceptual_hashes(img)
         elif method == "histogram":
@@ -85,11 +100,21 @@ class Recommender:
     
     def find_nearest_neighbors(self, uploaded_feature, dataset, method, k=5):
         distances = []
-        method_column = f"{method}"  # #### 'Embeddings', 'RGB_Histogram', 'Perceptual_Hash' //METHOD HAS TO BE SAME NAME AS COLS
+        #hier: if abfrage nach method
+        """
+        if method == 'histogram':
+            method_column = 'RGB_Histogram'
+        elif method == 'embeddings':
+            method_column = "Embeddings"
+        .
+        .
+        .
+        """
+        method_column = 'RGB_Histogram'#f"{method}"  # #### 'Embeddings', 'RGB_Histogram', 'Perceptual_Hash' //METHOD HAS TO BE SAME NAME AS COLS
 
         uploaded_feature = np.ravel(uploaded_feature) # convert uploaded_feature to a 1D array
-
-        for idx, feature in dataset[method_column].items():
+        
+        for image_id, feature in zip(dataset['Image_ID'],dataset[method_column]):#.items():
             feature = np.ravel(np.array(feature))
 
             if method == "embeddings":
@@ -101,16 +126,24 @@ class Recommender:
             else:
                 raise ValueError(f"Unknown method: {method}")
             
-            distances.append((dist, idx)) #store distance & index
+            distances.append((dist, image_id)) #store distance & index
 
         #sort distances by the computed distance
         distances.sort(key=lambda x: x[0])
         top_k = distances[:k]
-
+        #print(top_k)
         top_images = []
-        img_path_column = pd.read_csv("csv/images.csv")
+        """
+        pfad anpassen zur csv
+        """
+        img_path_column = pd.read_csv("C:/Users/marko/OneDrive/Desktop/Image_recommender_Big_Data/src/csv/images.csv")
+        #print(img_path_column)
         for _, idx in top_k:
-            image_path = img_path_column.loc[idx, 'Name'] #get path of recommended image
+            print(idx)
+            #print(img_path_column[img_path_column['ID'] == idx])
+            image_path = img_path_column[img_path_column['ID'] == image_id]['Name'].iloc[0] #get path of recommended image #df[df['Age'] == value]
+            print("image_path:  \n")
+            print(image_path)
             img = cv2.imread(image_path)
             if img is not None:
                 top_images.append(img)
