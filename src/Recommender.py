@@ -5,41 +5,13 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 from tkinter import filedialog
-from os.path import join
-
+from clustering import predict_cluster
 from resnet_extraction import ResNet_Feature_Extractor
 from phashes import perceptual_hashes
 from histograms import hist
 from scipy.spatial.distance import euclidean, hamming
 
-#data_cluster.pkl
-#----> .pk unbedingt in .pkl!
-"""
-import random
-from histograms import hist
-from phashes import perceptual_hashes
-import cv2
-    
-image_path = "C:/Users/marko/Documents/viertes_semester/BigData/Image_recommender_Big_Data/src/images/000000000024.jpg"
 
-img = cv2.imread(image_path)
-#modelfile = "C:/Users/marko/Documents/viertes_semester/BigData/Image_recommender_Big_Data/src/pickle/kmeans_model.pkl"
-#img = cv2.imread(image_path) 
-
-histogram = hist(img)
-
-extractor = ResNet_Feature_Extractor(model_weights="imagenet")
-resnet_embedding = extractor.extract_features(img)
-
-phash_vector = perceptual_hashes(img)
-    
-if args.method == "histogram":
-    print(predict_cluster(img, image_path, args, data = histogram))
-elif args.method == "embeddings":
-    print(predict_cluster(img, image_path, args, data = resnet_embedding))
-elif args.method == "hashes":
-    print(predict_cluster(img, image_path, args, data = phash_vector))
-"""
 class Recommender:
 
     def __init__ (self, methods):
@@ -82,10 +54,14 @@ class Recommender:
             
             if uploaded_feature is not None:
                 #cluster the upload image to get class number
-                cluster = predict_cluster(source_images[0], 'path_unused', method, uploaded_feature)
+                print("before clustering")
+                print(uploaded_feature)
+                print(method)
+                cluster = predict_cluster('unused_path', method, uploaded_feature)
+                print(cluster)
 
                 # load the features from pickle: filtered by matching cluster numbers
-                pickle_path = "pickle/data.pk"
+                pickle_path = "/Users/mjy/Downloads/data_clustered_5kentries.pkl" #"pickle/data_cluster.pkl"
                 dataset = pd.read_pickle(pickle_path)
                 clustered_dataset = dataset[dataset['cluster'] == cluster] #only get entries with dame cluster as upload
                 nearest_neighbors = self.find_nearest_neighbors(uploaded_feature, clustered_dataset, method, k=5)
@@ -150,11 +126,11 @@ class Recommender:
             print("No neighbors found.")
             return
 
-        # Calculate the total number of images to display
+        # calculate total number of images to display
         total_images = sum(len(top_images) for _, (_, top_images) in combined_results)
         
-        # Determine grid size for subplots (rows, columns)
-        cols = 5 # bc 5 recommended images are demanded
+        # grid size for subplots (rows, columns)
+        cols = 5 #bc 5 recommended images are demanded
         rows = (total_images + cols - 1) // cols
         plt.figure(figsize=(15, 5 * rows))  #figure size based on the number of rows
         plt.suptitle("We thought you might also like the following:", fontsize=16)
