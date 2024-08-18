@@ -6,7 +6,7 @@ Created on Tue Jun  4 02:57:50 2024
 """
 from dataflow import dataflow
 from Recommender import Recommender
-from Recommender_no_cluster import Recommender
+from Recommender_no_cluster import Recommender_NC
 from clustering import fit_cluster, predict_cluster
 import argparse
 import os
@@ -48,5 +48,5 @@ elif args.mode == "recommender" and args.method != None:
     
 elif args.mode == "recommender_no_cluster":
     print("start with the Recommender (no clusters)")
-    recommender_no_cluster = Recommender(methods=args.method)
+    recommender_no_cluster = Recommender_NC(methods=args.method)
     recommender_no_cluster.recommend()
