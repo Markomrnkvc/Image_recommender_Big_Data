@@ -1,4 +1,5 @@
 import cv2
+import os
 import pandas as pd
 import tkinter as tk
 import numpy as np
@@ -13,13 +14,15 @@ from scipy.spatial.distance import euclidean, hamming
 
 
 class Recommender:
+    global root
+    root = os.getcwd()
 
     def __init__ (self, methods):
         self.methods = methods
         
     def filedialog(self):
         root = tk.Tk()
-        #root.withdraw()
+        root.iconify() #makes root window very small
         source_image_paths = filedialog.askopenfilenames(title="upload your image(s)")
         if not source_image_paths:
             return None
@@ -61,22 +64,17 @@ class Recommender:
                 print(cluster)
 
                 # load the features from pickle: filtered by matching cluster numbers
-                """
-                pfad zur pickle anpassen
-                """
-                pickle_path = "C:/Users/marko/OneDrive/Desktop/Image_recommender_Big_Data/src/pickle/data_clustered.pkl" #"pickle/data_cluster.pkl"
+                pickle_path = os.path.join(root, "pickle/data_cluster.pkl")
                 dataset = pd.read_pickle(pickle_path)
                 
-                """
-                if bafrage nach method und dann 
-                clustered_dataset = dataset[dataset['cluster_histogram'] == cluster]
-                oder
-                clustered_dataset = dataset[dataset['cluster_embedding'] == cluster]
-                oder
-                clustered_dataset = dataset[dataset['cluster_perceptual_hashes'] == cluster]
-                """
-                clustered_dataset = dataset[dataset['cluster_histogram'] == cluster] #only get entries with dame cluster as upload
-                print(method)
+                #only get entries with the same cluster as the upload:
+                if method == "embeddings":
+                    clustered_dataset = dataset[dataset['cluster_embedding'] == cluster]
+                elif method == "hashes":
+                    clustered_dataset = dataset[dataset['cluster_perceptual_hashes'] == cluster]
+                elif method == "histogram":
+                    clustered_dataset = dataset[dataset['cluster_histogram'] == cluster]
+
                 nearest_neighbors = self.find_nearest_neighbors(uploaded_feature, clustered_dataset, method, k=5)
                 combined_results.append((method, nearest_neighbors)) #combine top-k-images from each method
             else:
@@ -87,10 +85,8 @@ class Recommender:
     
     def extract_features(self, img, method):
         if method == "embeddings":
-            
             resnet_extractor = ResNet_Feature_Extractor()
             return resnet_extractor.extract_features(img)
-            
         elif method == "hashes":
             return perceptual_hashes(img)
         elif method == "histogram":
@@ -100,23 +96,19 @@ class Recommender:
     
     def find_nearest_neighbors(self, uploaded_feature, dataset, method, k=5):
         distances = []
-        #hier: if abfrage nach method
-        """
-        if method == 'histogram':
+
+        # set method_column to fitting column-name according to the method used
+        if method == "embeddings":
+            method_column = 'Embeddings'
+        elif method == "hashes":
+            method_column = 'Perceptual_Hash'
+        elif method == "histogram":
             method_column = 'RGB_Histogram'
-        elif method == 'embeddings':
-            method_column = "Embeddings"
-        .
-        .
-        .
-        """
-        method_column = 'RGB_Histogram'#f"{method}"  # #### 'Embeddings', 'RGB_Histogram', 'Perceptual_Hash' //METHOD HAS TO BE SAME NAME AS COLS
 
-        uploaded_feature = np.ravel(uploaded_feature) # convert uploaded_feature to a 1D array
+        uploaded_feature = np.ravel(uploaded_feature) #convert uploaded_feature to a 1D array
         
-        for image_id, feature in zip(dataset['Image_ID'],dataset[method_column]):#.items():
+        for image_id, feature in zip(dataset['Image_ID'],dataset[method_column]):
             feature = np.ravel(np.array(feature))
-
             if method == "embeddings":
                 dist = euclidean(uploaded_feature, feature)
             elif method == "hashes":
@@ -126,24 +118,20 @@ class Recommender:
             else:
                 raise ValueError(f"Unknown method: {method}")
             
-            distances.append((dist, image_id)) #store distance & index
+            distances.append((dist, image_id)) #store distance & image id
 
         #sort distances by the computed distance
         distances.sort(key=lambda x: x[0])
         top_k = distances[:k]
-        #print(top_k)
         top_images = []
-        """
-        pfad anpassen zur csv
-        """
-        img_path_column = pd.read_csv("C:/Users/marko/OneDrive/Desktop/Image_recommender_Big_Data/src/csv/images.csv")
-        #print(img_path_column)
+
+        csv_path = os.path.join(root, "csv/images.csv")
+        img_path_column = pd.read_csv(csv_path)
+
         for _, idx in top_k:
             print(idx)
-            #print(img_path_column[img_path_column['ID'] == idx])
             image_path = img_path_column[img_path_column['ID'] == image_id]['Name'].iloc[0] #get path of recommended image #df[df['Age'] == value]
-            print("image_path:  \n")
-            print(image_path)
+            print(f"image_path: {image_path}")
             img = cv2.imread(image_path)
             if img is not None:
                 top_images.append(img)
