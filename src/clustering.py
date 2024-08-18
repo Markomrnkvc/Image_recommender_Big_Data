@@ -166,7 +166,7 @@ def predict_cluster(img_path, method, data):#, histogram, embedding, phash):
     current_path = os.getcwd()
     
     if method == 'histogram':
-        modelfile = "kmeans_models/kmeans_model_histograms.pkl"
+        modelfile = "pickle/kmeans_models/kmeans_model_histograms.pkl"
         modelfile = join(current_path, modelfile)
         #modelfile = "C:/Users/marko/Documents/viertes_semester/BigData/Image_recommender_Big_Data/src/pickle/kmeans_models/kmeans_model_histograms.pkl"
         
