@@ -1,5 +1,6 @@
 import cv2
 import os
+import sqlite3
 import pandas as pd
 import tkinter as tk
 import numpy as np
@@ -64,7 +65,7 @@ class Recommender:
                 print(cluster)
 
                 # load the features from pickle: filtered by matching cluster numbers
-                pickle_path = os.path.join(root, "pickle/data_cluster.pkl")
+                pickle_path = os.path.join(root, "pickle/data_clustered.pkl")
                 dataset = pd.read_pickle(pickle_path)
                 
                 #only get entries with the same cluster as the upload:
@@ -74,7 +75,7 @@ class Recommender:
                 elif method == "embeddings":
                     clustered_dataset = dataset[dataset['cluster_embedding'] == cluster]
                 elif method == "hashes":
-                    clustered_dataset = dataset[dataset['cluster_perceptual_hashes'] == cluster]
+                    clustered_dataset = dataset[dataset['cluster_phash'] == cluster]
                 elif method == "histogram":
                     clustered_dataset = dataset[dataset['cluster_histogram'] == cluster]
 
@@ -127,17 +128,26 @@ class Recommender:
         distances.sort(key=lambda x: x[0])
         top_k = distances[:k]
         top_images = []
+    
+        # connect to database to get the according path
+        conn = sqlite3.connect(
+            host="localhost",
+            database="imagerec",
+            user="postgres",
+            password="meep"
+        )
+        cursor = conn.cursor()
 
-        csv_path = os.path.join(root, "csv/images.csv")
-        img_path_column = pd.read_csv(csv_path)
+        for _, image_id in top_k:
+            cursor.execute("SELECT name FROM images_into_db WHERE id = ?", (image_id,))
+            result = cursor.fetchone()
+            if result:
+                image_path = result[0]  # get image path from the result
+                img = cv2.imread(image_path)
+                if img is not None:
+                    top_images.append(img)
 
-        for _, idx in top_k:
-            print(idx)
-            image_path = img_path_column[img_path_column['ID'] == image_id]['Name'].iloc[0] #get path of recommended image #df[df['Age'] == value]
-            print(f"image_path: {image_path}")
-            img = cv2.imread(image_path)
-            if img is not None:
-                top_images.append(img)
+        conn.close()
 
         return top_k, top_images
 
@@ -174,3 +184,15 @@ class Recommender:
 
 #recommender = Recommender(method="resnet_embedding")
 #recommender.recommend()
+"""        csv_path = os.path.join(root, "csv/images.csv")
+        img_path_column = pd.read_csv(csv_path)
+
+        for _, idx in top_k:
+            print(idx)
+            image_path = img_path_column[img_path_column['ID'] == idx]['Name'].iloc[0] #get path of recommended image #df[df['Age'] == value]
+            print(f"image_path: {image_path}")
+            img = cv2.imread(image_path)
+            if img is not None:
+                top_images.append(img)
+
+        return top_k, top_images"""
