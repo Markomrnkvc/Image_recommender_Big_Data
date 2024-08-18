@@ -6,6 +6,7 @@ Created on Tue Jun  4 02:57:50 2024
 """
 from dataflow import dataflow
 from Recommender import Recommender
+from Recommender_no_cluster import Recommender
 from clustering import fit_cluster, predict_cluster
 import argparse
 import os
@@ -25,7 +26,7 @@ parser = argparse.ArgumentParser(
     epilog="Students project",
 )
 
-parser.add_argument("-m", "--mode",choices=["generate", "cluster", "recommender"],  help="Choose which mode you want to execute")
+parser.add_argument("-m", "--mode",choices=["generate", "cluster", "recommender", "recommender_no_cluster"],  help="Choose which mode you want to execute")
 parser.add_argument("-f", "--folder", help="Path to folder containing the images")
 parser.add_argument("-me", "--method", nargs='+', choices=["histogram", "embeddings", "hashes"], help="choose which method you want to use for comparing the upload with the data base")
 
@@ -44,3 +45,8 @@ elif args.mode == "recommender" and args.method != None:
     print("starting recommendation app...")
     recommender = Recommender(methods=args.method)
     recommender.recommend()
+    
+elif args.mode == "recommender_no_cluster":
+    print("start with the Recommender (no clusters)")
+    recommender_no_cluster = Recommender(methods=args.method)
+    recommender_no_cluster.recommend()
