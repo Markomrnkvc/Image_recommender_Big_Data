@@ -10,7 +10,6 @@ from histograms import hist
 from phashes import perceptual_hashes
 from resnet_extraction import ResNet_Feature_Extractor
 
-
 import os
 from os.path import join, isfile
 from pathlib import Path 

@@ -12,7 +12,8 @@ from phashes import perceptual_hashes
 from histograms import hist
 from scipy.spatial.distance import euclidean, hamming
 
-# ------- data_clustered.pk
+#data_cluster.pkl
+#----> .pk unbedingt in .pkl!
 class Recommender:
 
     def __init__ (self, methods):
