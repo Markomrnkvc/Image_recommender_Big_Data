@@ -14,7 +14,7 @@ from scipy.spatial.distance import euclidean, hamming
 
 #data_cluster.pkl
 #----> .pk unbedingt in .pkl!
-class Recommender:
+class Recommender_NC:
 
     def __init__ (self, methods):
         self.methods = methods
