@@ -74,7 +74,7 @@ class Recommender:
                     and method == "hashes"
                     and method == "histogram"
                 ):
-                    print("in first if*++++++++")
+                    print("++++++++ in first if ++++++++")
                     clustered_dataset = dataset[dataset["cluster_embedding"] == cluster]
                 elif method == "embeddings":
                     clustered_dataset = dataset[dataset["cluster_embedding"] == cluster]

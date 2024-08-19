@@ -1,4 +1,5 @@
 import cv2
+import psycopg2
 import pandas as pd
 import tkinter as tk
 import numpy as np
@@ -110,16 +111,24 @@ class Recommender_NC:
         # sort distances by the computed distance
         distances.sort(key=lambda x: x[0])
         top_k = distances[:k]
-
         top_images = []
-        img_path_column = pd.read_csv("csv/images.csv")
-        for _, idx in top_k:
-            image_path = img_path_column.loc[
-                idx, "Name"
-            ]  # Assuming the paths are stored in the 'Name' column
-            img = cv2.imread(image_path)
-            if img is not None:
-                top_images.append(img)
+
+        conn = psycopg2.connect(
+            host="localhost", database="imagerec", user="postgres", password="meep"
+        )
+        cursor = conn.cursor()
+
+        for _, image_id in top_k:
+            cursor.execute("SELECT name FROM images_into_db WHERE id = %s", (image_id,))
+            result = cursor.fetchone()
+            if result:
+                image_path = result[0]  # get image path from the result
+                img = cv2.imread(image_path)
+                if img is not None:
+                    top_images.append(img)
+
+        conn.close()
+        print(top_k, top_images)
 
         return top_k, top_images
 
