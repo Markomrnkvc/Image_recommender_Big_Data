@@ -122,18 +122,18 @@ class Recommender_NC:
             cursor.execute("SELECT name FROM images_into_db WHERE id = %s", (image_id,))
             result = cursor.fetchone()
             if result:
-                #image_path = result[0]  # get image path from the result
-
+                
                 #adjusting for mac-use:
-                image_path = result[0].replace("\\", "/")
-                image_path = image_path.replace("D:/data/image_data", "/Volumes/ExtremeSSD/data/image_data")
+                #image_path = result[0].replace("\\", "/")
+                #image_path = image_path.replace("D:/data/image_data", "/Volumes/ExtremeSSD/data/image_data")
 
+                image_path = result[0]  # get image path from the result
                 img = cv2.imread(image_path)
                 if img is not None:
                     top_images.append(img)
 
         conn.close()
-        print(top_k, top_images)
+        #print(top_k, top_images)
 
         return top_k, top_images
 

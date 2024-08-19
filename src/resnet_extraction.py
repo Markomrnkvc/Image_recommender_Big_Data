@@ -20,7 +20,7 @@ class ResNet_Feature_Extractor:
     def __init__(self, model_weights="imagenet", input_shape=(224, 224, 3)):
         self.model = self.build_model(model_weights, input_shape)
 
-    def build_model(self, weights, input_shape):
+    def build_model(self, weights, input_shape=(224, 224, 3)):
         """instantiates and returns the ResNet50 model."""
 
         base_model = ResNet50(
@@ -61,7 +61,9 @@ class ResNet_Feature_Extractor:
 
         #print(f"extracting features...")
         feature = self.image_preprocessing(img)
-        #print(f"this is the FEATURE this is the FEATURE this is the FEATURE this is the FEATURE: {feature}")
+        #print(
+         #   f"this is the FEATURE this is the FEATURE this is the FEATURE this is the FEATURE: {feature}"
+        #)
         return feature
 
 
