@@ -9,7 +9,6 @@ Created on Mon Jun  3 20:25:48 2024
 und durch folder iterieren kann"""
 
 # Required Libraries 
-
 import os
 from os.path import join, exists, isfile
 from pathlib import Path 
@@ -42,10 +41,7 @@ def create_csv(args, csv_path):
     		writer = csv.writer(file) 
     		
     		writer.writerow(["ID", "Name"]) 
-            #, "Height", 
-    						#"Width", "Channels", 
-    						#"Avg Blue", "Avg Red", 
-    						#"Avg Green", "RGB_Histogram", "Perceptual_Hash"
+
     #creating csv if not existing
     if os.path.exists(error_path) == False: 
     	with open(error_path, 'w', newline = '') as file: 
@@ -82,7 +78,7 @@ def image_generator(args):
     # generator that runs image files from our given directory as the parameter
     for root, _, files in os.walk(path):
         
-        for file in tqdm(files, total=550000, initial=current_ID):
+        for file in tqdm(files, total=444880, initial=current_ID):
         #for file in files:
             if file.lower().endswith(('png', 'jpg', 'jpeg')):
                 image_path = os.path.join(root, file)
@@ -111,30 +107,6 @@ def image_generator(args):
                     #print(current_ID)
 
                 
-def get_data(args, img, image_path, image_id, csv_path):
-    
-    
-        
-    # Program to find the 
-    # colors and embed in the CSV 
-    #mypath, image_id = image_generator(args)
-    image_path = str(image_path)
-    #print(f"path:{image_path}")
-    #print(type(image_path))
-    batch_size = args.batch_size
-    batch_size = int(batch_size)
-    
-    #loading the image
-    #img = cv2.imread(image_path) 
-    #print(img)
-    h,w,c = img.shape
-    
-       
-    avg_color_per_row = numpy.average(img, axis = 0) 
-    avg_color = numpy.average(avg_color_per_row, axis = 0) 
-    #img_name = os.path.basename(image_path) #only img name, without whole path
-   	
-    return image_id, image_path, h, w, c, avg_color
 
 
 def data_writer(image_id, image_path, csv_path): #, h, w, c, avg_color, histogram, phash_vector
@@ -142,7 +114,4 @@ def data_writer(image_id, image_path, csv_path): #, h, w, c, avg_color, histogra
     with open(csv_path, 'a', newline = '') as file: 
            writer = csv.writer(file) 
            writer.writerow([image_id, image_path]) 
-           #, h, w, c, 
-                           #avg_color[0], avg_color[1], 
-                           #avg_color[2], histogram, phash_vector
     file.close()

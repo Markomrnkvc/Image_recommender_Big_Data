@@ -2,7 +2,7 @@ import psycopg2
 import csv
 from pathlib import Path 
 
-csv_path = Path("src/csv/images.csv")
+csv_path = Path("/Users/mjy/uni_projects/Image_recommender_Big_Data/src/csv/images.csv")
 
 def create_table(conn):
     """Create table in PostgreSQL"""
@@ -10,7 +10,7 @@ def create_table(conn):
     #hier können einfach weitere commands hinzugefügt werden, die dann alle ausgeführt werden
     commands = (
         """
-        CREATE TABLE IF NOT EXISTS images (
+        CREATE TABLE IF NOT EXISTS images_into_db (
             id SERIAL PRIMARY KEY,
             name VARCHAR(255) NOT NULL
         )
@@ -35,11 +35,12 @@ def import_csv_to_db(conn, csv_path):
         for row in reader:
             # only take the first 2 columns (id, name)
             row_to_insert = row[:2]
+            print(row_to_insert)
             
             # double check if there are only 2 values
             if len(row_to_insert) == 2:
                 cur.execute(
-                    "INSERT INTO images (id, name) VALUES (%s, %s)",
+                    "INSERT INTO images_into_db (id, name) VALUES (%s, %s)",
                     row_to_insert
                 )
             else:

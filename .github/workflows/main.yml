@@ -1,0 +1,38 @@
+name: setup environment and run tests
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  setup-environment:
+    runs-on: ${{ matrix.os }}
+
+    strategy:
+      matrix:
+        os: [macos-latest]
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: Set up Miniconda
+      uses: conda-incubator/setup-miniconda@v2
+      with:
+        miniconda-version: "latest"
+        python-version: 3.9
+        environment-file: src/tensorflow_environment.yml
+        activate-environment: tensorflow
+        auto-update-conda: true
+        auto-activate-base: false
+
+    - name: verify the conda setup
+      run: |
+        conda info --envs
+        conda list
+        echo "Environment setup completed on ${{ matrix.os }}."
+

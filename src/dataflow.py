@@ -4,19 +4,15 @@ Created on Thu Jun 27 02:36:11 2024
 
 @author: marko
 """
-from generator import create_csv, image_generator, get_data, data_writer
+from generator import create_csv, image_generator, data_writer
 from dataframe import create_pk, save_in_df
-import generator
 from histograms import hist
 from phashes import perceptual_hashes
-
+from resnet_extraction import ResNet_Feature_Extractor
 
 import os
 from os.path import join, isfile
 from pathlib import Path 
-import numpy 
-import cv2 
-import argparse 
 import numpy 
 import csv 
 from tqdm import tqdm
@@ -30,8 +26,8 @@ import pandas as pd
 current_path = os.getcwd()
 
 #path to csv-file
-csv_file = "csv\images.csv" #"C:/Users/marko/OneDrive/Documents/viertes_Semester/Big_Data/Image_recommender_Big_Data/src/csv/images.csv"
-error_file = "csv\error_images.csv"
+csv_file = "csv/images.csv" #"C:/Users/marko/OneDrive/Documents/viertes_Semester/Big_Data/Image_recommender_Big_Data/src/csv/images.csv"
+error_file = "csv/error_images.csv"
 
 #path to pickle file
 pk_file = "pickle/data.pkl"
@@ -58,14 +54,15 @@ def dataflow(args):
                 print("\nNo new images")
                 return
         
+        #opening pickle
+        df = pd.read_pickle(pk_path)
+        
     
         #for img ,image_path, image_id in tqdm(image_generator(args), total=444880):
         for img ,image_path, image_id in image_generator(args):
             #print(image_id)
             #getting data out of images
             try:
-                #image_id, image_path, h, w, c, avg_color = get_data(args, img, image_path, image_id, csv_path)
-                
                 #writing data into csv
                 data_writer(image_id, image_path, csv_path)# h, w, c, avg_color, histogram, phash_vector,
                 
@@ -75,12 +72,14 @@ def dataflow(args):
                 #calculating perceptual hashes
                 phash_vector = perceptual_hashes(img)
                 
-                embedding = random.randint(0,1000) #need placeholder, no embeddings yet
                 
-                #saving data in pickle file
-                save_in_df(embedding, image_id, histogram, phash_vector, df)# h, w, c, avg_color, 
+                extractor = ResNet_Feature_Extractor(model_weights="imagenet")
+                resnet_embedding = extractor.extract_features(img)
+                
+                save_in_df(resnet_embedding, image_id, histogram, phash_vector, df)
+                
                 #closing pickle after 50 images to save progress
-                if image_id % 1000 == 0:
+                if image_id % 50 == 0:
                     #closing pickle to save
                     df.to_pickle(pk_path)
                     #opening pickle
@@ -90,11 +89,10 @@ def dataflow(args):
                 print(f"\nError loading image {image_path}")
                 
                 with open(error_path, 'a', newline = '') as file: 
-               		writer = csv.writer(file) 
-               		writer.writerow([image_path]) 
+                    writer = csv.writer(file) 
+                    writer.writerow([image_path]) 
                 file.close() 
                
-                df.to_pickle(pk_path)
                 
             #print("\nimage data loaded into csv") 
         print(f"number of currently loaded images: {image_id}, {image_path}")
@@ -103,7 +101,6 @@ def dataflow(args):
 
     except:
         StopIteration
-        
         print(f"\nnumber currently loaded images: {image_id}, {image_path}")
         #closing pickle at end of generator to save
         df.to_pickle(pk_path)
