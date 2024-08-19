@@ -16,11 +16,15 @@ from pathlib import Path
 import numpy
 import csv
 from tqdm import tqdm
+import tensorflow as tf
 import random
 import pandas as pd
 
-# ID for each image, refered to in csv-file
-# image_id = 0
+#-------------------------------------------------------------
+# hides the annoying as fuck TF warnings!!!!!
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
+tf.get_logger().setLevel('ERROR') # (but still get error logs)
+#-------------------------------------------------------------
 
 # getting current path
 current_path = os.getcwd()
@@ -59,7 +63,7 @@ def dataflow(args):
         df = pd.read_pickle(pk_path)
 
         # for img ,image_path, image_id in tqdm(image_generator(args), total=444880):
-        for img, image_path, image_id in image_generator(args):
+        for img, image_path, image_id in tqdm(image_generator(args), total=444880):
             # print(image_id)
             # getting data out of images
             try:
@@ -94,13 +98,13 @@ def dataflow(args):
                 file.close()
 
             # print("\nimage data loaded into csv")
-        print(f"number of currently loaded images: {image_id}, {image_path}")
+        print(f"number of currently loaded images: {image_id}")
         # closing pickle at end of generator to save
         # df.to_pickle(pk_path)
 
     except:
         StopIteration
-        print(f"\nnumber currently loaded images: {image_id}, {image_path}")
+        #print(f"\nnumber currently loaded images: {image_id}, {image_path}")
         # closing pickle at end of generator to save
         df.to_pickle(pk_path)
         print("\nno new images to load into database or generator interrupted manually")

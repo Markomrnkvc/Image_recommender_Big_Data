@@ -24,8 +24,8 @@ import numpy as np
 image_id = 0
 
 # path to csv-file
-csv_file = "csv\images.csv"  # "C:/Users/marko/OneDrive/Documents/viertes_Semester/Big_Data/Image_recommender_Big_Data/src/csv/images.csv"
-error_file = "csv\error_images.csv"
+csv_file = "csv/images.csv"  # "C:/Users/marko/OneDrive/Documents/viertes_Semester/Big_Data/Image_recommender_Big_Data/src/csv/images.csv"
+error_file = "csv/error_images.csv"
 current_path = os.getcwd()
 csv_path = join(current_path, csv_file)
 error_path = join(current_path, error_file)
@@ -72,6 +72,7 @@ def image_generator(args):
 
         for lines in csvFile:
             error_list_img.append(lines[0])
+            current_ID += 1
 
     gen_uptodate = False  # variable we use to check if the generator is yielding new images or old ones
 

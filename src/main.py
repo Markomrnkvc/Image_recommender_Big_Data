@@ -13,9 +13,9 @@ import os
 import pandas as pd
 from resnet_extraction import ResNet_Feature_Extractor
 
-# picklefiley = "/Users/mjy/Downloads/data_clustered_5kentries.pkl"
-# data = pd.read_pickle(picklefiley)
-# print(data.head())
+#picklefiley = "pickle/data.pkl"
+#data = pd.read_pickle(picklefiley)
+#print(data.head())
 
 os.environ["CUDA_VISIBLE_DEVICES"] = "-1"
 

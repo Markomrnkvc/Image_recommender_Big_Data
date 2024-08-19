@@ -10,7 +10,6 @@ from keras.applications.resnet import preprocess_input
 from keras.layers import GlobalMaxPool2D
 from keras.utils import img_to_array
 
-
 class ResNet_Feature_Extractor:
     """
     This class is used to build the ResNet model, preprocess the images from the data set
@@ -29,7 +28,7 @@ class ResNet_Feature_Extractor:
         )
         base_model.trainable = False
         model = Sequential([base_model, GlobalMaxPool2D()])
-        model.summary()
+        #model.summary()
         return model
 
     def image_preprocessing(self, img):
@@ -60,11 +59,9 @@ class ResNet_Feature_Extractor:
         which is then returned into the pickle file in the dataflow that includes all features from all embeddings.
         """
 
-        print(f"extracting features...")
+        #print(f"extracting features...")
         feature = self.image_preprocessing(img)
-        print(
-            f"this is the FEATURE this is the FEATURE this is the FEATURE this is the FEATURE: {feature}"
-        )
+        #print(f"this is the FEATURE this is the FEATURE this is the FEATURE this is the FEATURE: {feature}")
         return feature
 
 
