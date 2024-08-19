@@ -72,7 +72,7 @@ class Recommender_NC:
         self.show_results(combined_results)
 
     def extract_features(self, img, method):
-        if method == "resnet_embedding":
+        if method == "embeddings":
             resnet_extractor = ResNet_Feature_Extractor()
             return resnet_extractor.extract_features(img)
         elif method == "hashes":
@@ -97,7 +97,7 @@ class Recommender_NC:
         for idx, feature in dataset[method_column].items():
             feature = np.ravel(np.array(feature))
 
-            if method == "resnet_embedding":
+            if method == "embeddings":
                 dist = euclidean(uploaded_feature, feature)
             elif method == "hashes":
                 dist = hamming(uploaded_feature, feature) * len(feature)
@@ -122,7 +122,12 @@ class Recommender_NC:
             cursor.execute("SELECT name FROM images_into_db WHERE id = %s", (image_id,))
             result = cursor.fetchone()
             if result:
-                image_path = result[0]  # get image path from the result
+                #image_path = result[0]  # get image path from the result
+
+                #adjusting for mac-use:
+                image_path = result[0].replace("\\", "/")
+                image_path = image_path.replace("D:/data/image_data", "/Volumes/ExtremeSSD/data/image_data")
+
                 img = cv2.imread(image_path)
                 if img is not None:
                     top_images.append(img)
