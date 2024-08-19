@@ -1,4 +1,5 @@
 import cv2
+import psycopg2
 import pandas as pd
 import tkinter as tk
 import numpy as np
@@ -57,7 +58,7 @@ class Recommender_NC:
 
             if uploaded_feature is not None:
                 # load the features from pickle
-                pickle_path = "pickle/data.pk"
+                pickle_path = "pickle/data.pkl"
                 dataset = pd.read_pickle(pickle_path)
                 nearest_neighbors = self.find_nearest_neighbors(
                     uploaded_feature, dataset, method, k=5
@@ -74,7 +75,7 @@ class Recommender_NC:
         if method == "resnet_embedding":
             resnet_extractor = ResNet_Feature_Extractor()
             return resnet_extractor.extract_features(img)
-        elif method == "phash_vector":
+        elif method == "hashes":
             return perceptual_hashes(img)
         elif method == "histogram":
             return hist(img)
@@ -83,8 +84,12 @@ class Recommender_NC:
 
     def find_nearest_neighbors(self, uploaded_feature, dataset, method, k=5):
         distances = []
-        method_column = f"{method}"  # METHOD HAS TO BE SAME NAME AS COLS
-
+        if method == "embeddings":
+            method_column = "Embeddings"
+        elif method == "hashes":
+            method_column = "Perceptual_Hash"
+        elif method == "histogram":
+            method_column = "RGB_Histogram"
         uploaded_feature = np.ravel(
             uploaded_feature
         )  # Convert uploaded_feature to a 1D array
@@ -94,7 +99,7 @@ class Recommender_NC:
 
             if method == "resnet_embedding":
                 dist = euclidean(uploaded_feature, feature)
-            elif method == "phash_vector":
+            elif method == "hashes":
                 dist = hamming(uploaded_feature, feature) * len(feature)
             elif method == "histogram":
                 dist = self.chi_square_distance(uploaded_feature, feature)
@@ -106,16 +111,24 @@ class Recommender_NC:
         # sort distances by the computed distance
         distances.sort(key=lambda x: x[0])
         top_k = distances[:k]
-
         top_images = []
-        img_path_column = pd.read_csv("csv/images.csv")
-        for _, idx in top_k:
-            image_path = img_path_column.loc[
-                idx, "Name"
-            ]  # Assuming the paths are stored in the 'Name' column
-            img = cv2.imread(image_path)
-            if img is not None:
-                top_images.append(img)
+
+        conn = psycopg2.connect(
+            host="localhost", database="imagerec", user="postgres", password="meep"
+        )
+        cursor = conn.cursor()
+
+        for _, image_id in top_k:
+            cursor.execute("SELECT name FROM images_into_db WHERE id = %s", (image_id,))
+            result = cursor.fetchone()
+            if result:
+                image_path = result[0]  # get image path from the result
+                img = cv2.imread(image_path)
+                if img is not None:
+                    top_images.append(img)
+
+        conn.close()
+        #print(top_k, top_images)
 
         return top_k, top_images
 

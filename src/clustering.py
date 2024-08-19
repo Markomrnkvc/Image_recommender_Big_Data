@@ -111,7 +111,6 @@ def fit_cluster(n_clusters=10):
         kmeans_phash.fit(phash_col)
         kmeans_emb.fit(emb_col)
 
-        print(current_path)
         # path to pickle file
         modelfile_histo = "pickle/kmeans_models/kmeans_model_histograms.pkl"
         modelfile_phash = "pickle/kmeans_models/kmeans_model_perceptualhashes.pkl"
@@ -232,8 +231,8 @@ def predict_cluster(img_path, method, data):  # , histogram, embedding, phash):
         """
 
     # Weise den neuen Daten Cluster zu, ohne das Modell neu zu trainieren
-    print("vor dem predicten")
+    #print("vor dem predicten")
     new_data["cluster"] = kmeans.predict(new_data_df)
-    print("nach dem predicten")
+    #print("nach dem predicten")
 
     return new_data.iloc[0]["cluster"]

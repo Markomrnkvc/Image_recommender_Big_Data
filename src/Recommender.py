@@ -5,6 +5,7 @@ import pandas as pd
 import tkinter as tk
 import numpy as np
 import matplotlib.pyplot as plt
+import psycopg2
 
 from tkinter import filedialog
 from clustering import predict_cluster
@@ -58,11 +59,8 @@ class Recommender:
 
             if uploaded_feature is not None:
                 # cluster the upload image to get class number
-                print("before clustering")
-                # print(uploaded_feature)
-                print(method)
                 cluster = predict_cluster("unused_path", method, uploaded_feature)
-                print(cluster)
+                print(f"Image belongs to cluster: {cluster}")
 
                 # load the features from pickle: filtered by matching cluster numbers
                 pickle_path = os.path.join(root, "pickle/data_clustered.pkl")
@@ -74,7 +72,7 @@ class Recommender:
                     and method == "hashes"
                     and method == "histogram"
                 ):
-                    print("in first if*++++++++")
+                    print("++++++++ in first if ++++++++")
                     clustered_dataset = dataset[dataset["cluster_embedding"] == cluster]
                 elif method == "embeddings":
                     clustered_dataset = dataset[dataset["cluster_embedding"] == cluster]
@@ -139,14 +137,13 @@ class Recommender:
         top_k = distances[:k]
         top_images = []
 
-        # connect to database to get the according path
-        conn = sqlite3.connect(
+        conn = psycopg2.connect(
             host="localhost", database="imagerec", user="postgres", password="meep"
         )
         cursor = conn.cursor()
 
         for _, image_id in top_k:
-            cursor.execute("SELECT name FROM images_into_db WHERE id = ?", (image_id,))
+            cursor.execute("SELECT name FROM images_into_db WHERE id = %s", (image_id,))
             result = cursor.fetchone()
             if result:
                 image_path = result[0]  # get image path from the result
