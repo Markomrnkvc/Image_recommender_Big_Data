@@ -85,9 +85,8 @@ def dataflow(args):
                     df.to_pickle(pk_path)
                     # opening pickle
                     df = pd.read_pickle(pk_path)
-            except:
-                AttributeError
-                print(f"\nError loading image {image_path}")
+            except Exception as e:
+                print(f"\nError processsing image {image_path}: {e}")
 
                 with open(error_path, "a", newline="") as file:
                     writer = csv.writer(file)
