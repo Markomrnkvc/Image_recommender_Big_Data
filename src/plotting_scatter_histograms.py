@@ -54,7 +54,7 @@ print("dimensionality reduction finished")
 #plotting data
 plt.figure(figsize=(12, 8))
 
-scatter = sns.scatterplot(x=embedding[:, 0], y=embedding[:, 1], hue=clusters, palette='viridis', s=100, alpha=0.7, hue_order=sorted(unique_clusters))
+scatter = sns.scatterplot(x=embedding[:, 0], y=embedding[:, 1], hue=clusters, palette='viridis', s=10, alpha=0.7, hue_order=sorted(unique_clusters))
 
 #legend
 handles, labels = scatter.get_legend_handles_labels()

@@ -91,11 +91,11 @@ def fit_cluster(n_clusters = 10):
     def initializing_kmeans(n_clusters):
         print(f"\ninitializing kmeans-models with {n_clusters} clusters")
         
-        kmeans_histo = KMeans( n_clusters = n_clusters, random_state = 0)
+        kmeans_histo = KMeans( n_clusters = n_clusters, random_state = 42)
         
-        kmeans_phash = KMeans( n_clusters = n_clusters, random_state = 0)
+        kmeans_phash = KMeans( n_clusters = n_clusters, random_state = 42)
         
-        kmeans_emb = KMeans( n_clusters = n_clusters, random_state = 0)
+        kmeans_emb = KMeans( n_clusters = n_clusters, random_state = 42)
         
         """
         kmeans_all = KMeans( n_clusters = n_clusters, random_state = 0)
