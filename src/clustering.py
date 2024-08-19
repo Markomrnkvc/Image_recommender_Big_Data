@@ -111,7 +111,6 @@ def fit_cluster(n_clusters=10):
         kmeans_phash.fit(phash_col)
         kmeans_emb.fit(emb_col)
 
-        print(current_path)
         # path to pickle file
         modelfile_histo = "pickle/kmeans_models/kmeans_model_histograms.pkl"
         modelfile_phash = "pickle/kmeans_models/kmeans_model_perceptualhashes.pkl"

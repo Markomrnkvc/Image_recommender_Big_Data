@@ -1,9 +1,12 @@
 import psycopg2
 import csv
 from pathlib import Path
+import os
 
-csv_path = Path("/Users/mjy/uni_projects/Image_recommender_Big_Data/src/csv/images.csv")
-
+current_path = os.getcwd()
+csv_path = Path("csv/images.csv")
+csv_path = os.path.join(current_path,csv_path )
+print(csv_path)
 
 def create_table(conn):
     """Create table in PostgreSQL"""
