@@ -12,20 +12,21 @@ from phashes import perceptual_hashes
 from histograms import hist
 from scipy.spatial.distance import euclidean, hamming
 
-#data_cluster.pkl
-#----> .pk unbedingt in .pkl!
+
+# data_cluster.pkl
+# ----> .pk unbedingt in .pkl!
 class Recommender_NC:
 
-    def __init__ (self, methods):
+    def __init__(self, methods):
         self.methods = methods
-        
+
     def filedialog(self):
         root = tk.Tk()
         root.withdraw()
         source_image_paths = filedialog.askopenfilenames(title="upload your image(s)")
         if not source_image_paths:
             return None
-        
+
         # turn image path(s) into arrays
         source_images = []
         for path in source_image_paths:
@@ -34,9 +35,9 @@ class Recommender_NC:
                 source_images.append(img)
             else:
                 print(f"Failed to load image: {path}")
-        
+
         return source_images
-        
+
     def recommend(self):
         # open filedialog to select image(s):
         source_images = self.filedialog()
@@ -44,7 +45,7 @@ class Recommender_NC:
         if not source_images:
             print("No image selected.")
             return
-        
+
         combined_results = []
 
         for method in self.methods:
@@ -53,18 +54,22 @@ class Recommender_NC:
             # extract features from the uploaded image(s):
             features = [self.extract_features(img, method) for img in source_images]
             uploaded_feature = np.mean(features, axis=0)
-            
+
             if uploaded_feature is not None:
                 # load the features from pickle
                 pickle_path = "pickle/data.pk"
                 dataset = pd.read_pickle(pickle_path)
-                nearest_neighbors = self.find_nearest_neighbors(uploaded_feature, dataset, method, k=5)
-                combined_results.append((method, nearest_neighbors)) #combine top-k-images from each method
+                nearest_neighbors = self.find_nearest_neighbors(
+                    uploaded_feature, dataset, method, k=5
+                )
+                combined_results.append(
+                    (method, nearest_neighbors)
+                )  # combine top-k-images from each method
             else:
                 print("Failed to extract features from the upload.")
         # display the combined results
         self.show_results(combined_results)
-    
+
     def extract_features(self, img, method):
         if method == "resnet_embedding":
             resnet_extractor = ResNet_Feature_Extractor()
@@ -75,12 +80,14 @@ class Recommender_NC:
             return hist(img)
         else:
             raise ValueError(f"Unknown method: {method}")
-    
+
     def find_nearest_neighbors(self, uploaded_feature, dataset, method, k=5):
         distances = []
         method_column = f"{method}"  # METHOD HAS TO BE SAME NAME AS COLS
 
-        uploaded_feature = np.ravel(uploaded_feature) # Convert uploaded_feature to a 1D array
+        uploaded_feature = np.ravel(
+            uploaded_feature
+        )  # Convert uploaded_feature to a 1D array
 
         for idx, feature in dataset[method_column].items():
             feature = np.ravel(np.array(feature))
@@ -93,27 +100,27 @@ class Recommender_NC:
                 dist = self.chi_square_distance(uploaded_feature, feature)
             else:
                 raise ValueError(f"Unknown method: {method}")
-            
-            distances.append((dist, idx)) #store distance & index
 
-        #sort distances by the computed distance
+            distances.append((dist, idx))  # store distance & index
+
+        # sort distances by the computed distance
         distances.sort(key=lambda x: x[0])
         top_k = distances[:k]
 
         top_images = []
         img_path_column = pd.read_csv("csv/images.csv")
         for _, idx in top_k:
-            image_path = img_path_column.loc[idx, 'Name']  # Assuming the paths are stored in the 'Name' column
+            image_path = img_path_column.loc[
+                idx, "Name"
+            ]  # Assuming the paths are stored in the 'Name' column
             img = cv2.imread(image_path)
             if img is not None:
                 top_images.append(img)
 
         return top_k, top_images
 
-    
     def chi_square_distance(self, histA, histB, eps=1e-10):
         return 0.5 * np.sum(((histA - histB) ** 2) / (histA + histB + eps))
-
 
     def show_results(self, combined_results):
         if not combined_results:
@@ -135,15 +142,13 @@ class Recommender_NC:
                 ax = plt.subplot(rows, cols, img_idx)
                 plt.imshow(cv2.cvtColor(img, cv2.COLOR_BGR2RGB))  # vonvert BGR to RGB
                 ax.set_title(f"{method}: Dist: {dist[0]:.2f}", fontsize=10)
-                plt.axis('off')
+                plt.axis("off")
                 img_idx += 1
 
-        #plt.tight_layout(h_pad=0.2, w_pad=0.3)  # reduce the space between rows (vertically)
-        #plt.subplots_adjust(hspace=0.1)  # decreases space between rows
+        # plt.tight_layout(h_pad=0.2, w_pad=0.3)  # reduce the space between rows (vertically)
+        # plt.subplots_adjust(hspace=0.1)  # decreases space between rows
         plt.show()
 
 
-
-
-#recommender = Recommender(method="resnet_embedding")
-#recommender.recommend()
+# recommender = Recommender(method="resnet_embedding")
+# recommender.recommend()
