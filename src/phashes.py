@@ -17,21 +17,22 @@ import PIL
 import time
 import numpy as np
 
-#start = time.time()
-def perceptual_hashes(img, return_img = False):
+
+# start = time.time()
+def perceptual_hashes(img, return_img=False):
     def calculate_mean(pixels_list):
         mean = 0
         total_pixels = len(pixels_list)
         for i in range(total_pixels):
             mean += pixels_list[i] / total_pixels
         return mean
-    
+
     def average_color(img):
-        #plt.imshow(img)
+        # plt.imshow(img)
         npmean = np.mean(img)
-        
+
         return npmean
-    
+
     def grab_pixels(squeezed_frame):
         pixels_list = []
         for x in range(0, squeezed_frame.shape[1], 1):
@@ -39,8 +40,7 @@ def perceptual_hashes(img, return_img = False):
                 pixel_color = squeezed_frame[x, y]
                 pixels_list.append(pixel_color)
         return pixels_list
-    
-    
+
     def hashify(squeezed_frame, bits_list):
         bit_index = 0
         hashed_frame = squeezed_frame
@@ -49,8 +49,7 @@ def perceptual_hashes(img, return_img = False):
                 hashed_frame[x, y] = bits_list[bit_index]
                 bit_index += 1
         return hashed_frame
-    
-    
+
     def make_bits_list(mean, pixels_list, max_pixelvalue):
         bits_list = []
         for i in range(len(pixels_list)):
@@ -59,48 +58,51 @@ def perceptual_hashes(img, return_img = False):
             else:
                 bits_list.append(0)
         return bits_list
+
     if return_img == True:
         """
         combining all methods into one
         including img version after hashing for plotting
-        
+
         """
-        def generate_hash(frame, hash_size = 16):
+
+        def generate_hash(frame, hash_size=16):
             frame_squeezed = cv2.resize(frame, (hash_size, hash_size))
             frame_squeezed = cv2.cvtColor(frame_squeezed, cv2.COLOR_BGR2GRAY)
             pixels_list = grab_pixels(frame_squeezed)
-            #mean_color = calculate_mean(pixels_list)
+            # mean_color = calculate_mean(pixels_list)
             npmean_color = average_color(frame)
             bits_list = make_bits_list(npmean_color, pixels_list, max_pixelvalue=255)
             hashed_frame = hashify(frame_squeezed, bits_list)
             hashed_frame = cv2.cvtColor(hashed_frame, cv2.COLOR_GRAY2BGR)
             return bits_list, hashed_frame
-    
+
         phash_vector, hashed_img = generate_hash(img)
-    
+
         return phash_vector, hashed_img
 
     elif return_img == False:
-    
+
         """
         combining all methods into one
-        
+
         """
-        def generate_hash(frame, hash_size = 16):
+
+        def generate_hash(frame, hash_size=16):
             frame_squeezed = cv2.resize(frame, (hash_size, hash_size))
             frame_squeezed = cv2.cvtColor(frame_squeezed, cv2.COLOR_BGR2GRAY)
             pixels_list = grab_pixels(frame_squeezed)
-            #mean_color = calculate_mean(pixels_list)
+            # mean_color = calculate_mean(pixels_list)
             npmean_color = average_color(frame)
-            bits_list = make_bits_list(npmean_color, pixels_list, max_pixelvalue = 1)
-            
-            
+            bits_list = make_bits_list(npmean_color, pixels_list, max_pixelvalue=1)
+
             return bits_list
-    
+
         phash_vector = generate_hash(img)
-        
+
         return phash_vector
-    
+
+
 """    
 #import time
 #Zum ausprobieren:
@@ -114,8 +116,8 @@ phash_vector2, hashed_img2 = perceptual_hashes(img_tocompare, return_img=True)
 
 print(len(phash_vector))
 """
-#phash_vector = perceptual_hashes(img)
-#phash_vector2= perceptual_hashes(img_tocompare)
+# phash_vector = perceptual_hashes(img)
+# phash_vector2= perceptual_hashes(img_tocompare)
 """
 print(f" hamming: {hamming(phash_vector, phash_vector2)}")
 #print(bits_list)

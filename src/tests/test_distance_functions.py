@@ -2,8 +2,9 @@ import unittest
 import numpy as np
 from scipy.spatial.distance import euclidean, hamming
 
+
 class TestDistanceFunctions(unittest.TestCase):
-    
+
     def chi_square_distance(self, histA, histB, eps=1e-10):
         return 0.5 * np.sum(((histA - histB) ** 2) / (histA + histB + eps))
 
@@ -28,5 +29,6 @@ class TestDistanceFunctions(unittest.TestCase):
         result = hamming(uploaded_feature, feature) * len(feature)
         self.assertEqual(result, expected)
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     unittest.main()
