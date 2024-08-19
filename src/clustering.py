@@ -232,8 +232,6 @@ def predict_cluster(img_path, method, data):  # , histogram, embedding, phash):
         """
 
     # Weise den neuen Daten Cluster zu, ohne das Modell neu zu trainieren
-    print("vor dem predicten")
     new_data["cluster"] = kmeans.predict(new_data_df)
-    print("nach dem predicten")
 
     return new_data.iloc[0]["cluster"]
