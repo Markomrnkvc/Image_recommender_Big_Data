@@ -58,11 +58,8 @@ class Recommender:
 
             if uploaded_feature is not None:
                 # cluster the upload image to get class number
-                print("before clustering")
                 # print(uploaded_feature)
-                print(method)
                 cluster = predict_cluster("unused_path", method, uploaded_feature)
-                print(cluster)
 
                 # load the features from pickle: filtered by matching cluster numbers
                 pickle_path = os.path.join(root, "pickle/data_clustered.pkl")
