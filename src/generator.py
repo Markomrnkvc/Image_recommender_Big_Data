@@ -72,6 +72,7 @@ def image_generator(args):
 
         for lines in csvFile:
             error_list_img.append(lines[0])
+            current_ID += 1
 
     gen_uptodate = False  # variable we use to check if the generator is yielding new images or old ones
 
