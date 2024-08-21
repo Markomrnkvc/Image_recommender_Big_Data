@@ -29,7 +29,7 @@ class ResNet_Feature_Extractor:
         )
         base_model.trainable = False
         model = Sequential([base_model, GlobalMaxPool2D()])
-        model.summary()
+        #model.summary()
         return model
 
     def image_preprocessing(self, img):
