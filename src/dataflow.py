@@ -69,11 +69,10 @@ def dataflow(args):
                 )  # h, w, c, avg_color, histogram, phash_vector,
 
                 # calculating histogram of the image
-                #histogram = hist(img)
-                histogram = 1
+                histogram = hist(img)
+                
                 # calculating perceptual hashes
-                #phash_vector = perceptual_hashes(img)
-                phash_vector = 1
+                phash_vector = perceptual_hashes(img)
                 
                 extractor = ResNet_Feature_Extractor(model_weights="imagenet")
                 resnet_embedding = extractor.extract_features(img)
