@@ -69,14 +69,15 @@ def dataflow(args):
                 )  # h, w, c, avg_color, histogram, phash_vector,
 
                 # calculating histogram of the image
-                histogram = hist(img)
-
+                #histogram = hist(img)
+                histogram = 1
                 # calculating perceptual hashes
-                phash_vector = perceptual_hashes(img)
-
-                #extractor = ResNet_Feature_Extractor(model_weights="imagenet")
-                #resnet_embedding = extractor.extract_features(img)
-                resnet_embedding = 1
+                #phash_vector = perceptual_hashes(img)
+                phash_vector = 1
+                
+                extractor = ResNet_Feature_Extractor(model_weights="imagenet")
+                resnet_embedding = extractor.extract_features(img)
+                
                 save_in_df(resnet_embedding, image_id, histogram, phash_vector, df)
 
                 # closing pickle after 50 images to save progress

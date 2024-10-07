@@ -50,7 +50,7 @@ if args.mode == "generate":
 
 elif args.mode == "cluster":
     print("clustering the dataset...")
-    fit_cluster(n_clusters=30)
+    fit_cluster(n_clusters=40)
 
 elif args.mode == "recommender" and args.method != None:
     print("starting recommendation app...")

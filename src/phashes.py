@@ -85,6 +85,7 @@ def perceptual_hashes(img, return_img=False):
 
         """
         combining all methods into one
+        
 
         """
 
