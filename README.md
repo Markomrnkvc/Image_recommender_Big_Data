@@ -67,6 +67,6 @@ This project is licensed under the MIT License.
 ## Contact
 
 For any questions, contact 
-**[mariej.yek@study.hs-duesseldorf.de](mailto:[mariej.yek@study.hs-duesseldorf.de])** 
+**[marie-juliette.yek@study.hs-duesseldorf.de](mailto:[marie-juliette.yek@study.hs-duesseldorf.de])** 
 or 
 **[marko.marinkovic@study.hs-duesseldorf.de](mailto:[marko.marinkovic@study.hs-duesseldorf.de])**.
