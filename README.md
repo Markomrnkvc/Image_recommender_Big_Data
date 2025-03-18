@@ -21,8 +21,7 @@ The **Image Recommender** is a Python-based application that recommends similar 
 ### Clone the Repository
 
 ```bash
-git clone https://github.com/yourusername/image-recommender.git
-cd image-recommender
+git clone https://github.com/Markomrnkvc/Image_recommender_Big_Data
 ```
 
 ### Prerequisites
