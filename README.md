@@ -2,7 +2,7 @@
 
 ## Overview
 
-The **Image Recommender** is a Python-based application that recommends similar images to your input images based on feature extraction techniques. Users can upload images, and the system suggests visually similar images using clustering and distance metrics.
+The **Image Recommender** is a Python-based application that recommends similar images to your input images based on feature extraction techniques trained on over 440k images. Users can upload images, and the system suggests visually similar images using clustering and distance metrics.
 
 ## Features
 
@@ -43,9 +43,10 @@ pip install -r src/requirements.txt
 3. **Receive Recommendations:**
    - The system processes the images and displays similar ones.
      ## Example Output
-  Here is an example of the recommended images based on an input image:
-   ![Example Input](...png)
-   ![Example Results](...png)
+  Here are examples of the recommended images based on an input image:
+   ![Example Results for Embeddings:](emb-boris.jpeg)(emb-manonbike.jpeg)(emb-webcam.jpeg)
+   ![Example Results for Histograms:](hist-boris.jpeg)(hist-pinkbee.jpeg)
+   ![Example Results for Hashes:](hash-rock.jpeg)(hist-polebear.jpeg)
 
 ## How It Works
 
