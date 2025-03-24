@@ -44,9 +44,9 @@ pip install -r src/requirements.txt
    - The system processes the images and displays similar ones.
      ## Example Output
   Here are examples of the recommended images based on an input image:
-   ![Example Results for Embeddings:](emb-boris.jpeg)(emb-manonbike.jpeg)(emb-webcam.jpeg)
-   ![Example Results for Histograms:](hist-boris.jpeg)(hist-pinkbee.jpeg)
-   ![Example Results for Hashes:](hash-rock.jpeg)(hist-polebear.jpeg)
+   ![Example Results for Embeddings:](sample-outputs/emb-boris.jpeg)(sample-outputs/emb-manonbike.jpeg)(sample-outputs/emb-webcam.jpeg)
+   ![Example Results for Histograms:](sample-outputs/hist-boris.jpeg)(sample-outputs/hist-pinkbee.jpeg)
+   ![Example Results for Hashes:](sample-outputs/hash-rock.jpeg)(sample-outputs/hist-polebear.jpeg)
 
 ## How It Works
 
