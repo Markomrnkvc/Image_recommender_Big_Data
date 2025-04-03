@@ -42,8 +42,10 @@ pip install -r src/requirements.txt
    - A file dialog will open for image selection. There is no limit to the amount of input pictures.
 3. **Receive Recommendations:**
    - The system processes the images and displays similar ones.
-     ## Example Output
+
+## Example Output
   Here are examples of the recommended images based on an input image:
+  
   <p align="center">
     <i>Example Results for Embeddings:</i>
     <img src="sample-outputs/emb-boris.jpeg" width=800><br/>
@@ -51,18 +53,15 @@ pip install -r src/requirements.txt
 
   <p align="center">
     <i>Example Results for Histograms:</i>
-    <img src="sample-outputs/hist-polebear.jpeg" width=800><br/>
+    <img src="sample-outputs/hist-pinkbee.jpeg" width=800><br/>
   </p>
 
   <p align="center">
-    <i>Example Results for Hashes:</i>
+    <i>Example Results for Hashes:</i><br/>
     <img src="sample-outputs/hash-rock.jpeg" width=800><br/>
   </p>
 
-  
-Example Results for Embeddings: sample-outputs/emb-boris.jpeg sample-outputs/emb-manonbike.jpeg sample-outputs/emb-webcam.jpeg
-Example Results for Histograms: sample-outputs/hist-boris.jpeg sample-outputs/hist-pinkbee.jpeg
-Example Results for Hashes: sample-outputs/hash-rock.jpeg sample-outputs/hist-polebear.jpeg
+
 
 ## How It Works
 
