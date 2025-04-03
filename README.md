@@ -51,7 +51,7 @@ pip install -r src/requirements.txt
 
   <p align="center">
     <i>Example Results for Histograms:</i>
-    <img src="sample-outputs/hist-boris.jpeg" width=800><br/>
+    <img src="sample-outputs/hist-polebear.jpeg" width=800><br/>
   </p>
 
   <p align="center">
