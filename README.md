@@ -36,7 +36,7 @@ pip install -r src/requirements.txt
 
 1. **Run the script:**
    ```bash
-   python Recommender.py
+   python main.py --mode "recommender" --folder "D:\images" --method "embeddings"        
    ```
 2. **Select Image(s):**
    - A file dialog will open for image selection. There is no limit to the amount of input pictures.
