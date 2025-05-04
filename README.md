@@ -39,11 +39,11 @@ pip install -r src/requirements.txt
 0. **Running the pipeline to generate the data:**
    ```bash
    python main.py --mode "generate"
-   """
+   ```
 1. **cluster data**
    ```bash
    python main.py --mode "cluster"
-   """
+   ```
 2. **Run the script:**
    ```bash
    python main.py --mode "recommender" --method "embeddings"   #instead of "embeddings" you can also use "histogram" or "hashes"     
