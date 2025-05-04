@@ -1,5 +1,8 @@
 # Image Recommender
 
+## Disclaimer
+To run the code you either need the exact Data we used  or need to run the whole pipeline on your own PC (which will take approximately 72h)
+
 ## Overview
 
 The **Image Recommender** is a Python-based application that recommends similar images to your input images based on feature extraction techniques trained on over 440k images. Users can upload images, and the system suggests visually similar images using clustering and distance metrics.
