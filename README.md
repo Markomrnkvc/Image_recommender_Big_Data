@@ -36,14 +36,21 @@ pip install -r src/requirements.txt
 ```
 
 ## Usage
-
-1. **Run the script:**
+0. **Running the pipeline to generate the data:**
    ```bash
-   python main.py --mode "recommender" --method "embeddings"        
+   python main.py --mode "generate"
+   """
+1. **cluster data**
+   ```bash
+   python main.py --mode "cluster"
+   """
+2. **Run the script:**
+   ```bash
+   python main.py --mode "recommender" --method "embeddings"   #instead of "embeddings" you can also use "histogram" or "hashes"     
    ```
-2. **Select Image(s):**
+3. **Select Image(s):**
    - A file dialog will open for image selection. There is no limit to the amount of input pictures.
-3. **Receive Recommendations:**
+4. **Receive Recommendations:**
    - The system processes the images and displays similar ones.
 
 ## Example Output
