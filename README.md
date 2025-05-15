@@ -1,7 +1,8 @@
 # Image Recommender
 
 ## Disclaimer
-To run the code you either need the exact Data we used  or need to run the whole pipeline on your own PC (which will take approximately 72h)
+To run the code you either need the exact Data we used or need to run the whole pipeline on your own PC (which can take a while depending on the amount of images you have)
+also you need to install pgAdmin4
 
 ## Overview
 
@@ -40,17 +41,19 @@ pip install -r src/requirements.txt
    ```bash
    python main.py --mode "generate"
    ```
-1. **cluster data**
+1. **fill the database:**
+   run the csv_to_db.py file
+2. **cluster data**
    ```bash
    python main.py --mode "cluster"
    ```
-2. **Run the script:**
+3. **Run the script:**
    ```bash
    python main.py --mode "recommender" --method "embeddings"   #instead of "embeddings" you can also use "histogram" or "hashes"     
    ```
-3. **Select Image(s):**
+4. **Select Image(s):**
    - A file dialog will open for image selection. There is no limit to the amount of input pictures.
-4. **Receive Recommendations:**
+5. **Receive Recommendations:**
    - The system processes the images and displays similar ones.
 
 ## Example Output
