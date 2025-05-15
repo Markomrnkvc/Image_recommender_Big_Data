@@ -41,7 +41,7 @@ pip install -r src/requirements.txt
    ```bash
    python main.py --mode "generate"
    ```
-1. **fill the database:**
+1. **fill the database:**\n
    run the csv_to_db.py file
 2. **cluster data**
    ```bash
