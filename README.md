@@ -41,19 +41,21 @@ pip install -r src/requirements.txt
    ```bash
    python main.py --mode "generate"
    ```
-1. **fill the database:**\n
+1. **fill the database:**
+   
    run the csv_to_db.py file
-2. **cluster data**
+   
+3. **cluster data**
    ```bash
    python main.py --mode "cluster"
    ```
-3. **Run the script:**
+4. **Run the script:**
    ```bash
    python main.py --mode "recommender" --method "embeddings"   #instead of "embeddings" you can also use "histogram" or "hashes"     
    ```
-4. **Select Image(s):**
+5. **Select Image(s):**
    - A file dialog will open for image selection. There is no limit to the amount of input pictures.
-5. **Receive Recommendations:**
+6. **Receive Recommendations:**
    - The system processes the images and displays similar ones.
 
 ## Example Output
